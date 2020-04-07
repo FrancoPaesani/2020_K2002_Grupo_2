@@ -8,22 +8,8 @@
 #pragma warning(disable : 4996)
 
 
-
-/*
-struct info {
-	char dato[36];
-	char tipo[16];
-};
-*/
-
 int main()
 {
-	//info tabla[4]; 
-/*	int j=0,n = 0, x=0;
-	char a[]="";
-	int cant=5;
-	char prueba[5][16];*/
-	
 	
 	//-----------------------------------------------------
 	//comienzo
@@ -44,128 +30,170 @@ int main()
 		printf("ERROR- No leyo correctamente");
 		return 2;
 	} 
+		printf("CONTENIDO DEL ARCHIVO:\n");
+		printf("-------------------------------------------------------------------------------------------------\n");
 	 	printf("%s",cadena);
 	//---------------------------------------------------------------------------------------------------------
 	//testeo como los trae tanto en formato char o int 
-		printf("\n%d",(char)cadena[12]-'0');
-		int a= (char)cadena[12]-'0';
+		/*printf("\n%d",(char)cadena[16]-'0');
+		int a= (char)cadena[16]-'0';
 		//a++;
 		printf("\n%d",a);
-		char aw=cadena[12];
-		printf("\n%d\n",aw);
+		char aw=a+'0';
+		printf("\n%c\n",aw);*/
 	//----------------------------------------------------------------------------------------------------------	
 	// Automata
-		int i=0,estado,inicio=0,fin=1;
-		bool valido=true;
+		
+		printf("\n\nINICIO DE RECONOCIMIENTO POR UN AFD:\n");
+		printf("-------------------------------------------------------------------------------------------------\n\n");
+		int i=0,estado,inicio=0,s1=1,s2=2,s3=3,s4=4,fin=5;
+		bool dec=false,octa=false,hex=false,noRec=false;
 		int numero;
-		int pos=0;
-		for(i=0;i<cantElem;i++) 
-		{   
-			estado=inicio;
+		estado=inicio;
+		for(i=0;i<cantElem+2;i++) 
+		{  
+			numero= (char)cadena[i]-'0';
 			switch(estado) 
 			{
 				case 0:
-					numero= (char)cadena[i]-'0';
-					if(numero>=0&&numero<=7)
+					
+					
+					if(numero==0)
 					{
-						estado=inicio;
+						printf("%c",numero+'0');
+						estado=s2;	
+					}
+					else if(numero>=1&&numero<=9)
+					{
+						estado=s1;
+						printf("%c",numero+'0');	
 					}
 					else
 					{
-					  estado=fin;
+						printf("%c",numero+'0');
+						estado=s4;
+					
+						
 					}
 					break;
 				case 1:
-					valido=false;
-				    
+					
+				    if(numero>=0&&numero<=9)
+				    {
+				    	estado=s1;
+						printf("%c",numero+'0');	
+					}
+					else if(numero==-4||numero==-48)
+					{
+						estado=fin;
+						dec=true;
+					}
+					else
+					{
+						printf("%c",numero+'0');
+						estado=s4;
+						
+						
+					}
+					break;
+				case 2:
+					if(numero==72||numero==40)
+					{
+						estado=s3;
+						printf("%c",numero+'0');
+					}
+					else if(numero>=0&&numero<=7)
+					{
+						estado=s2;
+						printf("%c",numero+'0');
+					}
+					else if(numero==-4||numero==-48)
+					{
+						estado=fin;
+						octa=true;
+					}
+					else
+					{
+						printf("%c",numero+'0');
+						estado=s4;
+						
+						
+					}
+					break;
+				case 3:
+					if(numero>=0&&numero<=9||numero>=17&&numero<=22||numero>=49&&numero<=54)
+				    {
+				    	estado=s3;
+						printf("%c",numero+'0');	
+					}
+					else if(numero==-4||numero==-48)
+					{
+						estado=fin;
+						hex=true;
+					}
+					else
+					{
+						printf("%c",numero+'0');
+						estado=s4;
+						
+						
+					}
+					
+					break;
+				case 4:
+					if(numero==-4||numero==-48)
+					{
+						estado=fin;
+						noRec=true;
+					}
+					else
+					{
+						printf("%c",numero+'0');
+					}
+						
+					break;
+					
+				case 5:
+					if(dec==true)
+					{
+						printf("\tEs decimal\n");
+						dec=false;
+						estado=inicio;
+						i--;
+					}
+					else if(octa==true)
+					{
+						printf("\tEs octal\n");
+						octa=false;
+						estado=inicio;
+						i--;
+					}
+					else if(hex==true)
+					{
+						printf("\tEs hexadecimal\n");
+						hex=false;
+						i--;
+						estado=inicio;
+					}
+					else if(noRec==true)
+					{
+						printf("\tNo es valido\n");
+						noRec=false;
+						i--;
+						estado=inicio;
+					}
 					break;
 			default:
 			break;
-			}
-				printf("%d",(char)cadena[i]-'0');
-			if(valido==false)
-			{
-				printf("no es octal");
-				
-			}
+			}	
 			
-			
-		}
-	free(cadena);
-	fclose(valores); 
-	return 0;
-    //fin
-    //---------------------------------------------------------------------------------------------------------------
-/*	
-
-	while (!feof(Valores))
-	{
-		while ((n == 0 || strcspn(a, ",") && !feof(Valores)))
-		{
-			
-			fread(&a[0], 1, 1, Valores);
-
-			if (a[0] != ',' and !feof(Valores))
-			{
-				//tabla[j].dato[n] = a[0];
-				prueba[j][n]=a[0];
-				printf("%c", prueba[j][n]);
-				//printf("%c", tabla[j].dato[n]);
-				n++;
-			}
-			else
-			{
-				a[0] = ',';
-			}
-		}
-		printf("\n");
-		n = 0;
-		j++;
-		printf("\nsalgo de bucle\n");
-	}
-	
-	for(x=0;x<cant;x++)
-	{ int j=0;
-	  int estado=0;
-	  
-	  while((char)prueba[x][j]!='\0') 
-	  	{
-	  		
-	  		printf("%c", prueba[x][j]);
-	  		j++;
-    	}
-    	printf("\n");
-	/*	while((char)prueba[x][j]!='\0'&&estado==0)
-     	{
-     		switch(estado) 
-			 {
-     			case 0:
-     				int num = (char)prueba[x][j] - '0';
-				 if(num>=0 && num<=7)
-				 {
-				 	estado=0;
-				 }
-				 else
-				 {
-				 	estado= 1;
-				 	printf("\nno es octal \n");
-				 }
-				 break;
-				
-	           
-           }
-			j++;
-			
-		}*/
-		/*if(estado ==1)
-		{
-			printf("No es octal: %d \n");
 		}
 		
-	}*/
-	
-	/*int cant= */
-	//printf("%d",cant);
-
+	free(cadena);// LIBERA MEMORIA ASIGNADA AL VECTOR
+	fclose(valores); //CIERRA ARCHIVO
+	return 0;
+    //fin
+ 
 }
+
 
