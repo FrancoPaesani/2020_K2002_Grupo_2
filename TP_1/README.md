@@ -11,3 +11,5 @@ Se entra en un for hasta la cantidad de elementos que hay en el archivo, el cual
 encuentra. Cada "case n" representa a un estado en el autómata. Internamente cada case tiene varios if´s para decidir que estado
 le prosigue.
 Una vez que se llega al último estado, quiere decir que se encontró con la coma y debe reiniciar las variables para el siguiente dato.
+
+![TP-Automata](Automata.jpeg)
