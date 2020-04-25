@@ -14,7 +14,7 @@ int main()
 	//-----------------------------------------------------
 	//comienzo
 	//Lee el archivo
-
+/*
 	FILE* valores = fopen("valores.txt", "rb");
 	if (valores == NULL)
 	{
@@ -44,7 +44,7 @@ int main()
 		printf("\n%c\n",aw);*/
 		//----------------------------------------------------------------------------------------------------------	
 		// Automata
-
+/*
 	printf("\n\nINICIO DE RECONOCIMIENTO POR UN AFD:\n");
 	printf("-------------------------------------------------------------------------------------------------\n\n");
 	int i = 0, estado, inicio = 0, s1 = 1, s2 = 2, s3 = 3, s4 = 4, fin = 5;
@@ -216,5 +216,119 @@ int main()
 	fclose(valores); //CIERRA ARCHIVO
 	return 0;
 	//fin
+*/
+   //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ // Segundo metodo
+ //comienzo
+	//Lee el archivo
 
+	FILE*valores = fopen("valores.txt", "rb");
+	if(valores == NULL)
+	{printf("ERROR-No se pudo abrir el archivo");
+	 return 1;
+	}
+	fseek(valores,0,SEEK_END);
+	int cantElem=ftell(valores);
+	rewind(valores);
+	char * cadena =(char*) calloc(sizeof(char),cantElem);
+	int ElemLeidos= fread(cadena,sizeof(char),cantElem,valores);
+	if(ElemLeidos!=cantElem)
+	{
+		printf("ERROR- No leyo correctamente");
+		return 2;
+	} 
+		printf("CONTENIDO DEL ARCHIVO:\n");
+		printf("-------------------------------------------------------------------------------------------------\n");
+	 	printf("%s",cadena);
+	//---------------------------------------------------------------------------------------------------------
+	//testeo como los trae tanto en formato char o int 
+		/*printf("\n%d",(char)cadena[16]-'0');
+		int a= (char)cadena[16]-'0';
+		//a++;
+		printf("\n%d",a);
+		char aw=a+'0';
+		printf("\n%c\n",aw);*/
+	//----------------------------------------------------------------------------------------------------------	
+	// Automata
+    int matriz[7] [6]={{2,1,6,6,6,6},{1,1,1,1,6,6},{5,6,6,5,3,6},{4,4,4,4,6,4},{4,4,4,4,6,4},{5,6,6,5,6,6},{6,6,6,6,6,6}};
+    	printf("\n\nINICIO DE RECONOCIMIENTO POR UN AFD:\n");
+		printf("-------------------------------------------------------------------------------------------------\n\n");
+		int i=0,estado,inicio=0;
+		int numero;
+		estado=inicio;
+		for(i=0;i<cantElem+2;i++) 
+		{  
+			numero= (char)cadena[i]-'0';
+			if(numero==0 && estado==inicio)
+			{
+				estado=matriz[estado][0];
+				printf("%c",numero+'0');
+			}
+			else if(numero>=1&&numero<=9&&estado==inicio)
+			{
+				estado=matriz[estado][1];
+				printf("%c",numero+'0');
+			}
+			else if(numero>=0&&numero<=7)
+			{
+				estado=matriz[estado][3];
+				printf("%c",numero+'0');
+			}
+			else if(numero>=0&&numero<=9)
+			{
+				estado=matriz[estado][2];
+				printf("%c",numero+'0');
+			}
+			
+			else if(numero==72||numero==40)
+			{
+				estado=matriz[estado][4];
+				printf("%c",numero+'0');
+			}
+			else if(numero>=17&&numero<=22||numero>=49&&numero<=54)
+			{
+				estado=matriz[estado][5];
+				printf("%c",numero+'0');
+			}
+			
+			if(numero==-4||numero==-48)
+			{
+				
+				if(estado==1)
+					{
+						printf("\tEs decimal\n");
+						estado=inicio;
+						i--;
+					}
+					else if(estado==5)
+					{
+						printf("\tEs octal\n");
+					
+						estado=inicio;
+						i--;
+					}
+					else if(estado==4)
+					{
+						printf("\tEs hexadecimal\n");
+					
+						i--;
+						estado=inicio;
+					}
+					else if(estado==6)
+					{
+						printf("\tNo es valido\n");
+					
+						i--;
+						estado=inicio;
+					}
+				
+				
+			}
+			
+			
+        }
+        free(cadena);// LIBERA MEMORIA ASIGNADA AL VECTOR
+		fclose(valores); //CIERRA ARCHIVO
+		return 0;
+ 		//fin
 }
