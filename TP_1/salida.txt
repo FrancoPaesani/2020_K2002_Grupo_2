@@ -1,0 +1,14 @@
+0123		Es octal
+1325		Es decimal
+0x45AB		Es hexadecimal
+123		Es decimal
+0x152ACF		Es hexadecimal
+0X45655aA		Es hexadecimal
+01		Es octal
+12y25		No es valido
+x3v4		No es valido
+x		No es valido
+3		Es decimal
+03		Es octal
+0xa53A		Es hexadecimal
+00ýý

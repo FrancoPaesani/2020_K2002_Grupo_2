@@ -8,219 +8,51 @@
 #pragma warning(disable : 4996)
 
 
+void devuelveestado(int& c, int& est,int& inicio, int matrizaux [][6], bool& flagexiste) {
+
+	if (c == 0 && est == inicio)
+	{
+		est = matrizaux[est][0];
+		//printf("%c", c + '0');
+	}
+	else if (c >= 1 && c <= 9 && est == inicio)
+	{
+		est = matrizaux[est][1];
+		//printf("%c", c + '0');
+	}
+	else if (c >= 0 && c <= 7 && est != 7)
+	{
+		est = matrizaux[est][3];
+		//printf("%c", c + '0');
+	}
+	else if (c >= 0 && c <= 9 && est != 7)
+	{
+		est = matrizaux[est][2];
+		//printf("%c", c + '0');
+	}
+
+	else if ((c == 72 || c == 40) && est != 7)
+	{
+		est = matrizaux[est][4];
+		//printf("%c", c + '0');
+	}
+	else if (((c >= 17 && c <= 22 || c >= 49 && c <= 54) && est!=7))
+	{
+		est = matrizaux[est][5];
+		//printf("%c", c + '0');
+	}
+	else
+	{
+		flagexiste = false;
+	}
+}
+
+
 int main()
 {
 
-	//-----------------------------------------------------
-	//comienzo
-	//Lee el archivo
-/*
-	FILE* valores = fopen("valores.txt", "rb");
-	if (valores == NULL)
-	{
-		printf("ERROR-No se pudo abrir el archivo");
-		return 1;
-	}
-	fseek(valores, 0, SEEK_END);
-	int cantElem = ftell(valores);
-	rewind(valores);
-	char* cadena = (char*)calloc(sizeof(char), cantElem+1);
-	int ElemLeidos = fread(cadena, sizeof(char), cantElem, valores);
-	if (ElemLeidos != cantElem)
-	{
-		printf("ERROR- No leyo correctamente");
-		return 2;
-	}
-	printf("CONTENIDO DEL ARCHIVO:\n");
-	printf("-------------------------------------------------------------------------------------------------\n");
-	printf("%s", cadena);
-	//---------------------------------------------------------------------------------------------------------
-	//testeo como los trae tanto en formato char o int 
-		/*printf("\n%d",(char)cadena[16]-'0');
-		int a= (char)cadena[16]-'0';
-		//a++;
-		printf("\n%d",a);
-		char aw=a+'0';
-		printf("\n%c\n",aw);*/
 		//----------------------------------------------------------------------------------------------------------	
 		// Automata
-/*
-	printf("\n\nINICIO DE RECONOCIMIENTO POR UN AFD:\n");
-	printf("-------------------------------------------------------------------------------------------------\n\n");
-	int i = 0, estado, inicio = 0, s1 = 1, s2 = 2, s3 = 3, s4 = 4, fin = 5;
-	bool dec = false, octa = false, hex = false, noRec = false;
-	int numero;
-	estado = inicio;
-
-	for (i = 0; i < cantElem+1; i++)
-	{
-
-		numero = (char)cadena[i] - '0';
-		switch (estado)
-		{
-		case 0:
-
-
-			if (numero == 0)
-			{
-				printf("%c", numero + '0');
-				estado = s2;
-			}
-			else if (numero >= 1 && numero <= 9)
-			{
-				estado = s1;
-				printf("%c", numero + '0');
-			}
-			else
-			{
-				printf("%c", numero + '0');
-				estado = s4;
-
-
-			}
-			break;
-		case 1:
-
-			if (numero >= 0 && numero <= 9)
-			{
-				estado = s1;
-				printf("%c", numero + '0');
-			}
-			else if (numero == -4 || numero == -48)
-			{
-				estado = fin;
-				dec = true;
-			}
-			else
-			{
-				printf("%c", numero + '0');
-				estado = s4;
-
-
-			}
-			break;
-		case 2:
-			if (numero == 72 || numero == 40)
-			{
-				estado = s3;
-				printf("%c", numero + '0');
-			}
-			else if (numero >= 0 && numero <= 7)
-			{
-				estado = s2;
-				printf("%c", numero + '0');
-			}
-			else if (numero == -4 || numero == -48)
-			{
-				estado = fin;
-				octa = true;
-			}
-			else
-			{
-				printf("%c", numero + '0');
-				estado = s4;
-
-
-			}
-			break;
-		case 3:
-			if (numero >= 0 && numero <= 9 || numero >= 17 && numero <= 22 || numero >= 49 && numero <= 54)
-			{
-				estado = s3;
-				printf("%c", numero + '0');
-			}
-			else if (numero == -4 || numero == -48)
-			{
-				estado = fin;
-				hex = true;
-			}
-			else
-			{
-				printf("%c", numero + '0');
-				estado = s4;
-
-
-			}
-
-			break;
-		case 4:
-			if (numero == -4 || numero == -48)
-			{
-				estado = fin;
-				noRec = true;
-			}
-			else
-			{
-				printf("%c", numero + '0');
-			}
-
-			break;
-
-		case 5:
-			if (dec == true)
-			{
-				printf("\tEs decimal\n");
-				dec = false;
-				estado = inicio;
-				i--;
-			}
-			else if (octa == true)
-			{
-				printf("\tEs octal\n");
-				octa = false;
-				estado = inicio;
-				i--;
-			}
-			else if (hex == true)
-			{
-				printf("\tEs hexadecimal\n");
-				hex = false;
-				i--;
-				estado = inicio;
-			}
-			else if (noRec == true)
-			{
-				printf("\tNo es valido\n");
-				noRec = false;
-				i--;
-				estado = inicio;
-			}
-			break;
-		default:
-			break;
-		}
-//		Agregado ultimo elemento		//
-
-		if (i == cantElem && dec == true)
-		{
-			printf("\tEs decimal\n");
-		}
-		else if (i == cantElem && octa == true)
-		{
-			printf("\tEs octal\n");
-		}
-		else if (i == cantElem && noRec == true)
-		{
-			printf("\tNo es valido\n");
-		}
-		else if (i == cantElem && hex == true)
-		{
-			printf("\tEs hexadecimal\n");
-		}
-
-		//		Agregado ultimo elemento		//
-
-	}
-
-	free(cadena);// LIBERA MEMORIA ASIGNADA AL VECTOR
-	fclose(valores); //CIERRA ARCHIVO
-	return 0;
-	//fin
-*/
-   //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- // Segundo metodo
- //comienzo
-	//Lee el archivo
 
 	FILE*valores = fopen("valores.txt", "rb");
 	if(valores == NULL)
@@ -232,6 +64,7 @@ int main()
 	rewind(valores);
 	char * cadena =(char*) calloc(sizeof(char),cantElem);
 	int ElemLeidos= fread(cadena,sizeof(char),cantElem,valores);
+	printf("\n %d\n", ElemLeidos);
 	if(ElemLeidos!=cantElem)
 	{
 		printf("ERROR- No leyo correctamente");
@@ -240,93 +73,84 @@ int main()
 		printf("CONTENIDO DEL ARCHIVO:\n");
 		printf("-------------------------------------------------------------------------------------------------\n");
 	 	printf("%s",cadena);
-	//---------------------------------------------------------------------------------------------------------
-	//testeo como los trae tanto en formato char o int 
-		/*printf("\n%d",(char)cadena[16]-'0');
-		int a= (char)cadena[16]-'0';
-		//a++;
-		printf("\n%d",a);
-		char aw=a+'0';
-		printf("\n%c\n",aw);*/
-	//----------------------------------------------------------------------------------------------------------	
-	// Automata
+
     int matriz[7] [6]={{2,1,6,6,6,6},{1,1,1,1,6,6},{5,6,6,5,3,6},{4,4,4,4,6,4},{4,4,4,4,6,4},{5,6,6,5,6,6},{6,6,6,6,6,6}};
     	printf("\n\nINICIO DE RECONOCIMIENTO POR UN AFD:\n");
 		printf("-------------------------------------------------------------------------------------------------\n\n");
 		int i=0,estado,inicio=0;
 		int numero;
+		bool flagexiste=true, flagvacio=true;
 		estado=inicio;
-		for(i=0;i<cantElem+2;i++) 
-		{  
-			numero= (char)cadena[i]-'0';
-			if(numero==0 && estado==inicio)
+		FILE* salida = fopen("salida.txt", "wb");
+		if (valores == NULL)
+		{
+			printf("ERROR-No se pudo abrir el archivo");
+			return 1;
+		}
+		for (i = 0; i < cantElem + 2; i++)
+		{
+			flagexiste = true;
+			flagvacio = true;
+			numero = (char)cadena[i] - '0';
+			if (flagexiste == true || flagvacio == true)
 			{
-				estado=matriz[estado][0];
-				printf("%c",numero+'0');
-			}
-			else if(numero>=1&&numero<=9&&estado==inicio)
-			{
-				estado=matriz[estado][1];
-				printf("%c",numero+'0');
-			}
-			else if(numero>=0&&numero<=7)
-			{
-				estado=matriz[estado][3];
-				printf("%c",numero+'0');
-			}
-			else if(numero>=0&&numero<=9)
-			{
-				estado=matriz[estado][2];
-				printf("%c",numero+'0');
-			}
-			
-			else if(numero==72||numero==40)
-			{
-				estado=matriz[estado][4];
-				printf("%c",numero+'0');
-			}
-			else if(numero>=17&&numero<=22||numero>=49&&numero<=54)
-			{
-				estado=matriz[estado][5];
-				printf("%c",numero+'0');
-			}
-			
-			if(numero==-4||numero==-48)
-			{
-				
-				if(estado==1)
+				if (numero != -4 && numero != -48)
+				{
+					devuelveestado(numero, estado, inicio, matriz, flagexiste);
+					printf("%c", numero + '0');
+					putc(numero + '0', salida);
+				}
+
+				if (numero == -4 || numero == -48)
+				{
+					if (estado == 1)
 					{
 						printf("\tEs decimal\n");
-						estado=inicio;
+						fputs("\t\tEs decimal\n", salida);
+						estado = inicio;
 						i--;
 					}
-					else if(estado==5)
+					else if (estado == 5)
 					{
 						printf("\tEs octal\n");
-					
-						estado=inicio;
+						fputs("\t\tEs octal\n", salida);
+						estado = inicio;
 						i--;
 					}
-					else if(estado==4)
+					else if (estado == 4)
 					{
 						printf("\tEs hexadecimal\n");
-					
+						fputs("\t\tEs hexadecimal\n", salida);
 						i--;
-						estado=inicio;
+						estado = inicio;
 					}
-					else if(estado==6)
+					else if (estado == 6)
 					{
 						printf("\tNo es valido\n");
-					
+						fputs("\t\tNo es valido\n", salida);
 						i--;
-						estado=inicio;
+						estado = inicio;
 					}
-				
-				
+					else if (estado == 7)
+					{
+						printf("\tNo es valido\n");
+						fputs("\t\tNo es valido\n", salida);
+						i--;
+						estado = inicio;
+					}
+					flagvacio = true;
+				}
+				else
+				{
+					flagvacio = false;
+				}
+
+				if (flagexiste == false && flagvacio == false)
+				{
+					estado = 7;
+				}
 			}
-			
-			
-        }
+		}
         free(cadena);// LIBERA MEMORIA ASIGNADA AL VECTOR
 		fclose(valores); //CIERRA ARCHIVO
 		return 0;
