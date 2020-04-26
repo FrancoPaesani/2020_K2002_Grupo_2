@@ -13,4 +13,4 @@ Si no es uno válido se bloqueará en el estado de rechazo hasta que se continue
 
 <img style="" src="Automata.jpeg"> 
 
-<img style="" src="TablaTp.jpg"> 
+<img style="" src="TablaTp.png"> 
