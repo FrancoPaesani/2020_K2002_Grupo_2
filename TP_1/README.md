@@ -1,4 +1,6 @@
-Breve explicación del codigo en C.
+# <font size="50"> Reconociendo varios tipos de datos</font>
+
+**Breve explicación del codigo en C.**
 
 Construimos un archivo txt "valores.txt" con muchos valores posibles separados por una coma. Para leer el mismo utilizamos las funciones
 fopen, fseek (para posicionarnos al final del archivo), ftell (obtener cantidad de caracteres totales) y fread. Además, usamos el putc para ingresar un caracter al txt final y el fputs para ingresar un string al mismo.
@@ -9,8 +11,6 @@ Se entra en un for hasta la cantidad de elementos que hay en el archivo, el cual
 Si no es uno válido se bloqueará en el estado de rechazo hasta que se continue con el siguiente dato.
 
 
+<img style="" src="Automata.jpeg"> 
 
-![TP-Automata](Automata.jpeg)
-
-
-![Tablita](TablaTp.jpg)
+<img style="" src="TablaTp.jpg"> 
