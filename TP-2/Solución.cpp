@@ -7,6 +7,24 @@
 #include <stdlib.h> 
 #pragma warning(disable : 4996)
 
+int estadoqprox = 0;
+
+int matriz[2][3][5] = {
+
+						{
+							{10, 2, 10, 4, 10},		// (q0,$)	1
+							{2, 2, 1, 10, 10},		// (q1,$)	2
+							{10, 10, 1, 10, 10}		// (q2,$)	3
+						},
+
+						{
+							{10, 5, 10, 1, 4},		// (q0,R)	4
+							{5, 5, 4, 10, 3},		// (q1,R)	5
+							{10, 10, 4, 10, 3}		// (q2,R)	6
+						}
+
+};
+
 int funcion(int matriz[][3][5], int &valor) {
 	return matriz[0][0][valor];
 }
@@ -44,40 +62,42 @@ int pop(Pila* pila) {
 	return v;
 }
 
-int devuelvesigno (int &caracter/*, int& estadosigno, Pila pila*/,int &estadoq, int &estado) {
+int devuelvesigno (int &caracter/*, int& estadosigno, Pila pila*/,int &estadoq, int &estado,int &inicio, int &estadoqprox) {
 	int estadosigno;
-	if (estado ==0 && (caracter == 0 || caracter == 45 || caracter == 47 || caracter == 42 || caracter == 43 || caracter == 41))
+	estadoq = estadoqprox;
+	if (inicio ==1 && (caracter == 48 || caracter == 45 || caracter == 47 || caracter == 42 || caracter == 43 || caracter == 41))
 	{
 		printf("Estas ingresando un caracter sin tener en cuenta la semantica de la expresion");
 		estado = 10;
 		return 0;
 	}
 
-	if (caracter == 0){
+	if (caracter == 48){
 		printf("ESTA ENTRE 0");
 		 estadosigno = 0;
-		 estadoq = 1;
+		 estadoqprox = 1;
 		return estadosigno;
 	}
-	if (caracter >= 1 && caracter <= 9)
+	if (caracter >= 49 && caracter <= 57)
 	{
 		printf("ESTA ENTRE 1 Y 9");
 		 estadosigno = 1;
-		 estadoq = 1;
+		 estadoqprox = 1;
 		return estadosigno;
 	}
 	if ( caracter ==45 || caracter == 47 ||  caracter==42 || caracter==43 )
 	{
 		printf("ESTA ENTRE OPERADORES");
-		 estadosigno = 2;
-		 estadoq = 0;
+		estadosigno = 2;
+		//printf("EL ESTADO ACTUAL ES --->  %d", matriz[0][estadoq][estadosigno]);
+		estadoqprox = 0;
 		return estadosigno;
 	}
 	if (caracter == 40)
 	{
 		printf("ES ABRE PARENTESIS");
 		 estadosigno = 3;
-		 estadoq = 0;
+		 estadoqprox = 0;
 		return estadosigno;
 	//	push(&pila, 3);
 	}
@@ -85,34 +105,42 @@ int devuelvesigno (int &caracter/*, int& estadosigno, Pila pila*/,int &estadoq, 
 	{
 		printf("ES CIERRA PARENTESIS");
 		estadosigno = 4;
-		estadoq = 2;
+		estadoqprox = 2;
 		return estadosigno;
 	//	push(&pila, 4);
 	}
 }
-
+/*
 int devuelvocimapila (Pila pila,int& estadoPila){
 
 	estadoPila=pop(&pila);
 	return estadoPila;
 }
+*/
+int devuelvoestado(int &caracter, int& estado, int& estadosigno, int& estadoinicio, int matriz[2][3][5]/*,Pila pila, int& estadopila*/,int &estadoq, int &inicio) {
 
-int devuelvoestado(int &caracter, int& estado, int& estadosigno, int& estadoinicio, int matriz[2][3][5]/*,Pila pila, int& estadopila*/,int &estadoq) {
+	printf("\n %c \n", caracter);
 
-	printf("\n %d \n", caracter);
-	estadosigno=devuelvesigno(caracter,estadoq,estado);
-	//int x = devuelvocimapila(pila, estadopila);
+	estadosigno=devuelvesigno(caracter,estadoq,estado,inicio,estadoqprox);
 
-	if (estado ==10)
+	/*if (estado == 10)
 	{
 		return 10;
 	}
-	return matriz [0] [estadoq] [estadosigno];
-
+	else
+	{*/
+		printf("\n ESTADOQ EN FUNCION ES ::: %d",estadoq);
+		return matriz[0][estadoq][estadosigno];
+	//}
 }
 
 int main()
 {
+	char v = '+';
+	int b = v;
+	if ((b) == 43) {
+		printf("El valor del PARENTESIS ES  ------->  %d\n\n", (v));
+	}
 	//Pila pila = NULL;
 	//int flength = strlen(f);
 	char f[256];
@@ -121,6 +149,7 @@ int main()
 	int i = 0;
 	int p0 = 0;
 	int R = 1;
+	int inicio = 1;
 	int estadoPila = 0;
 	int estadosigno=0;
 	int estadoinicio = 1;
@@ -128,28 +157,14 @@ int main()
 	int q0 = 0, q1 = 1, q2 = 2;
 	int signo0 = 0, signonum = 1, signos = 2, signoabre = 3, signocierra = 4;
 	int contadorabre = 0, contadorcierra = 0;
-	int matriz[2][3][5] = { 
-
-							{
-								{10, 2, 10, 4, 10},		// (q0,$)	1
-								{2, 2, 1, 10, 10},		// (q1,$)	2
-								{10, 10, 1, 10, 10}		// (q2,$)	3
-							},
-
-							{
-								{10, 5, 10, 1, 4},		// (q0,R)	4
-								{5, 5, 4, 10, 3},		// (q1,R)	5
-								{10, 10, 4, 10, 3}		// (q2,R)	6
-							}
-
-						}; //[cimaPila] [estado] [signos]
+ //[cimaPila] [estado] [signos]
 	//printf("%d", matriz[1][2][4]);
 	
 	while (reinicio==1)
 	{
 	int estado = 0;
-	int estadoq = 0;
-	
+	int estadoq = 0, estadoqprox=0;
+	inicio = 1;
 	scanf ("%s", &f);		//Leo la entranda
 
 	flength = strlen(f);
@@ -158,9 +173,14 @@ int main()
 
 		for (i=0; i < flength; i++)
 		{
-			int charAnumero = (f[i] - '0');
-			estado=devuelvoestado(charAnumero,estado,estadosigno,estadoinicio,matriz,estadoq);
+			int charAnumero = (f[i]);
+			estado=devuelvoestado(charAnumero,estado,estadosigno,estadoinicio,matriz,estadoq,inicio);
+
 			printf("\n El estado actual es: %d", estado);
+			//printf("\n El estado Q es: %d", estadoq);
+		//	printf("\n El estado signo es: %d", estadosigno);
+
+			inicio = 0;
 		}
 
 	printf("\n ¿Desea ingresar otra expresion? (1/0): ");
@@ -174,99 +194,5 @@ int main()
 	y = funcion(matriz, x);*/
 	printf("\n FIN: ");
 
-	/*
-	//----------------------------------------------------------------------------------------------------------	
-	// Automata
-	FILE* valores = fopen("valores.txt", "rb");
-	if (valores == NULL)
-	{
-		printf("ERROR-No se pudo abrir el archivo");
-		return 1;
-	}
-	fseek(valores, 0, SEEK_END);
-	int cantElem = ftell(valores);
-	rewind(valores);
-	char* cadena = (char*)calloc(sizeof(char), cantElem);
-	int ElemLeidos = fread(cadena, sizeof(char), cantElem, valores);
-	if (ElemLeidos != cantElem)
-	{
-		printf("ERROR- No leyo correctamente");
-		return 2;
-	}
-	printf("CONTENIDO DEL ARCHIVO:\n");
-	printf("-------------------------------------------------------------------------------------------------\n");
-	printf("%s", cadena);
 
-
-	------------------------------------------------------------------------
-
-
-	int matriz[7][7] = { {2,1,6,6,6,6,6},{1,1,1,1,6,6,6},{5,6,6,5,3,6,6},{4,4,4,4,6,4,6},{4,4,4,4,6,4,6},{5,6,6,5,6,6,6},{6,6,6,6,6,6,6} };
-	printf("\n\nINICIO DE RECONOCIMIENTO POR UN AFD:\n");
-	printf("-------------------------------------------------------------------------------------------------\n\n");
-	int i = 0, estado, inicio = 0;
-	int numero;
-	estado = inicio;
-	FILE* salida = fopen("salida.txt", "wb");
-	if (valores == NULL)
-	{
-		printf("ERROR-No se pudo abrir el archivo");
-		return 1;
-	}
-	for (i = 0; i < cantElem + 1; i++)
-	{
-		numero = (char)cadena[i] - '0';
-
-		if (numero != -4 && numero != -48)
-		{
-			devuelveestado(numero, estado, inicio, matriz);
-			printf("%c", numero + '0');
-			putc(numero + '0', salida);
-		}
-
-		if (numero == -4 || numero == -48)
-		{
-			if (estado == 1)
-			{
-				printf("\tEs decimal\n");
-				fputs("\t\tEs decimal\n", salida);
-				estado = inicio;
-
-			}
-			else if (estado == 2)
-			{
-				printf("\tEs cero\n");
-				fputs("\t\tEs cero\n", salida);
-				estado = inicio;
-
-			}
-			else if (estado == 5)
-			{
-				printf("\tEs octal\n");
-				fputs("\t\tEs octal\n", salida);
-				estado = inicio;
-
-			}
-			else if (estado == 4)
-			{
-				printf("\tEs hexadecimal\n");
-				fputs("\t\tEs hexadecimal\n", salida);
-
-				estado = inicio;
-			}
-			else if (estado == 6)
-			{
-				printf("\tNo es valido\n");
-				fputs("\t\tNo es valido\n", salida);
-				estado = inicio;
-			}
-		}
-
-
-
-	}
-	free(cadena);// LIBERA MEMORIA ASIGNADA AL VECTOR
-	fclose(valores); //CIERRA ARCHIVO
-	return 0;
-	//fin*/
 }
