@@ -537,7 +537,7 @@ YY_DECL
 
 #line 16 "archivo.l"
 
-
+	int n=0;
 #line 542 "lex.yy.c"
 
 	if ( yy_init )
@@ -624,7 +624,7 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 18 "archivo.l"
-{printf("Encontre una constante entera decimal \n");}
+{printf("Encontre una constante entera decimal \n");n++;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
@@ -639,21 +639,23 @@ YY_RULE_SETUP
 case 4:
 YY_RULE_SETUP
 #line 21 "archivo.l"
-{printf("Encontre un identificador: %s\n",yytext);printf(" -> EL ID ES UN CHAR?: %i\n",strcmpi(yytext,"a"));
-struct Info b;b.tipo="Identificador";b.cadena=yytext;b.extra=0;
-liste=insertarOrdenadoeIncrementa(liste,b);b.cadena="";b.tipo="";}
+{printf("Encontre un identificador: %s\n",yytext);n++;
+struct Info b;b.cadena=malloc(sizeof(yytext));									//reservo memoria de la longitud del identificador
+strcpy(b.cadena,yytext);														//copio el char* a nuestro struct
+b.tipo="Identificador";b.extra=0;
+liste=insertarOrdenadoeIncrementa(liste,b);b.cadena="";b.tipo="";}				//inserto el struct en la lista ordenada o incremento existente
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 24 "archivo.l"
+#line 26 "archivo.l"
 {printf("Encontre una constante real \n");}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 27 "archivo.l"
+#line 29 "archivo.l"
 ECHO;
 	YY_BREAK
-#line 657 "lex.yy.c"
+#line 659 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1539,7 +1541,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 27 "archivo.l"
+#line 29 "archivo.l"
 
 
 int main(){
@@ -1547,20 +1549,5 @@ int main(){
      yyin = fopen("entrada.txt", "r");
      yylex();
      muestra(liste);
-     
-/*
-	d.tipo="Identificador";
-	d.cadena="ii";
-	d.extra=0;
-	a.tipo="Identificador";
-	a.cadena="ii";
-	a.extra=0;
-	c.tipo="Identificador";
-	c.cadena="Hh";
-	c.extra=0;
-	list=insertarOrdenadoeIncrementa(list,d);
-	list=insertarOrdenadoeIncrementa(list,a);
-	list=insertarOrdenadoeIncrementa(list,c);
-	muestra(list);
-*/
+
 }

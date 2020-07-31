@@ -32,7 +32,7 @@ void muestra(tipoLista *lista)
    	q = lista;               /*guarda primer nodo en p*/
    	while (q != NULL)        /*recorre la lista*/
   	 {
-    	printf("TIPO: %s\nCADENA: %s\nCANTIDAD: %i\n",q->datos.tipo,q->datos.cadena,q->datos.extra);
+    	printf("TIPO: %s\nCADENA: %s\nCANTIDAD: %i\n",q->datos.tipo,q->datos.cadena,q->datos.extra+1);
       	q = q->sgte;               /*avanza nodo p*/
  	 }
   	 printf("\n");

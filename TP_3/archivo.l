@@ -14,13 +14,15 @@ tipoLista *liste=NULL;
 %}
 
 %%
-
-[1-9][0-9]* {printf("Encontre una constante entera decimal \n");}
+	int n=0;
+[1-9][0-9]* {printf("Encontre una constante entera decimal \n");n++;}
 0[0-7]* {printf("Encontre una constante entera octal \n");}
 0[xX][0-9a-fA-F]+ {printf("Encontre una constante entera hexadecimal \n");}
-[a-zA-Z_][a-zA-Z0-9_]* {printf("Encontre un identificador: %s\n",yytext);printf(" -> EL ID ES UN CHAR?: %i\n",strcmpi(yytext,"a"));
-struct Info b;b.tipo="Identificador";b.cadena=yytext;b.extra=0;
-liste=insertarOrdenadoeIncrementa(liste,b);b.cadena="";b.tipo="";}
+[a-zA-Z_][a-zA-Z0-9_]* {printf("Encontre un identificador: %s\n",yytext);n++;
+struct Info b;b.cadena=malloc(sizeof(yytext));									//reservo memoria de la longitud del identificador
+strcpy(b.cadena,yytext);														//copio el char* a nuestro struct
+b.tipo="Identificador";b.extra=0;
+liste=insertarOrdenadoeIncrementa(liste,b);b.cadena="";b.tipo="";}				//inserto el struct en la lista ordenada o incremento existente
 [0-9]*\.[0-9]+ {printf("Encontre una constante real \n");}
 
 
@@ -31,20 +33,5 @@ int main(){
      yyin = fopen("entrada.txt", "r");
      yylex();
      muestra(liste);
-     
-/*
-	d.tipo="Identificador";
-	d.cadena="ii";
-	d.extra=0;
-	a.tipo="Identificador";
-	a.cadena="ii";
-	a.extra=0;
-	c.tipo="Identificador";
-	c.cadena="Hh";
-	c.extra=0;
-	list=insertarOrdenadoeIncrementa(list,d);
-	list=insertarOrdenadoeIncrementa(list,a);
-	list=insertarOrdenadoeIncrementa(list,c);
-	muestra(list);
-*/
+
 }
