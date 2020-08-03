@@ -116,3 +116,48 @@ tipoLista *insertarOrdenadoeIncrementa (tipoLista *l, struct Info x){
 	}
 	return l;
 }
+
+// ---------------------------------- //
+
+tipoLista *Enqueue(tipoLista *frente, struct Info dato)
+{
+ tipoLista *nuevo_nodo;
+    
+ nuevo_nodo = (tipoLista*)malloc(sizeof(tipoLista));
+ 
+ nuevo_nodo->datos=dato;
+ 
+ nuevo_nodo->sgte=NULL;
+ 
+if(frente == NULL ) /* Si esta vacia la cola */
+{
+  frente = nuevo_nodo;
+}
+else
+{                  /* Insertar al final */
+ tipoLista *aux;
+ 
+ aux = frente;
+ 
+ while(aux->sgte!=NULL)
+ aux = aux -> sgte;
+ 
+ aux->sgte = nuevo_nodo;
+}
+
+return frente;
+}
+
+tipoLista *Dequeue(tipoLista *frente)
+{
+
+tipoLista *aux;
+
+aux = frente;
+
+frente = frente -> sgte;
+
+free(aux);
+
+return frente;  
+}
