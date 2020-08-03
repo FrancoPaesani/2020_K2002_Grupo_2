@@ -119,13 +119,13 @@ tipoLista *insertarOrdenadoeIncrementa (tipoLista *l, struct Info x){
 
 // ---------------------------------- //
 
-tipoLista *Enqueue(tipoLista *frente, struct Info dato)
+tipoLista *Enqueue(tipoLista *frente, struct Info x)
 {
  tipoLista *nuevo_nodo;
     
  nuevo_nodo = (tipoLista*)malloc(sizeof(tipoLista));
  
- nuevo_nodo->datos=dato;
+ nuevo_nodo->datos=x;
  
  nuevo_nodo->sgte=NULL;
  
