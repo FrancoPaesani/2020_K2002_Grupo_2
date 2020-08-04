@@ -6,8 +6,9 @@
 #include <stdlib.h>
 #include "funciones.h"
 
-tipoLista *listaId=NULL;
+ tipoLista *listaId=NULL;
  tipoLista *listaCadenas=NULL;
+ tipoLista *cola=NULL;
  	struct Info d;
 	struct Info a;
 	struct Info c;
@@ -38,11 +39,11 @@ MANEJO_DATO volatile|const
 strcpy(b.cadena,yytext);													
 b.tipo="Literal Cadena";b.extra=strlen(yytext)-2;listaCadenas=insertarPrimero(listaCadenas,b);}
 {CARACTER_PUNTUACION} {printf("Encontre un caracter de puntuacion: %s\n",yytext);}
-{TIPO_DATO} {printf("Encontre un tipo de dato: %s\n",yytext);}
-{FUNCIONES} {printf("Encontre una funcion: %s\n",yytext);}
-{DATO_RETORNO} {printf("Encontre un tipo de dato de retorno: %s\n",yytext);}
-{CLASE_ALMACENAMIENTO} {printf("Encontre una clase de almacenamiento: %s\n",yytext);}
-{MANEJO_DATO} {printf("Encontre una forma de manejo de datos: %s\n",yytext);}
+{TIPO_DATO} {printf("Encontre un tipo de dato: %s\n",yytext);cola=insertaPalabraReservada(cola,yytext,b,"TipoDeDato");}
+{FUNCIONES} {printf("Encontre una funcion: %s\n",yytext);cola=insertaPalabraReservada(cola,yytext,b,"Funcion");}
+{DATO_RETORNO} {printf("Encontre un tipo de dato de retorno: %s\n",yytext);cola=insertaPalabraReservada(cola,yytext,b,"PalabraReservada");}
+{CLASE_ALMACENAMIENTO} {printf("Encontre una clase de almacenamiento: %s\n",yytext);cola=insertaPalabraReservada(cola,yytext,b,"ClaseAlmacenamiento");}
+{MANEJO_DATO} {printf("Encontre una forma de manejo de datos: %s\n",yytext);cola=insertaPalabraReservada(cola,yytext,b,"ManejoDato");}
 \/\/[^\n]* {printf("Encontre una linea de comentarios: %s\n",yytext);}  
 \/\*    {BEGIN(comentarioVarias);}
 <comentarioVarias>[^\*]* 
@@ -53,17 +54,18 @@ b.tipo="Literal Cadena";b.extra=strlen(yytext)-2;listaCadenas=insertarPrimero(li
 0[xX]{DIGITO_HEXADECIMAL}+ {printf("Encontre una constante entera hexadecimal \n");}
 {DIGITO_DECIMAL}*\.{DIGITO_DECIMAL}+([Ee](\+|\-)?{DIGITO_DECIMAL}*)? {printf("Encontre una constante real: %s\n",yytext);}
 [a-zA-Z_][a-zA-Z0-9_]* {printf("Encontre un identificador: %s\n",yytext);n++;
-b.cadena=malloc(sizeof(yytext));									//reservo memoria de la longitud del identificador
-strcpy(b.cadena,yytext);														//copio el char* a nuestro struct
+b.cadena=malloc(sizeof(yytext));									
+strcpy(b.cadena,yytext);														
 b.tipo="Identificador";b.extra=0;
-listaId=insertarOrdenadoeIncrementa(listaId,b);}				//inserto el struct en la lista ordenada o incremento existente
+listaId=insertarOrdenadoeIncrementa(listaId,b);}
 %%
 
 int main(){
 
      yyin = fopen("entrada.txt", "r");
      yylex();
+	 muestraID(cola);
      muestraID(listaId);
 	 muestraCadena(listaCadenas);
-
 }
+

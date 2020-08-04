@@ -1,1 +1,1 @@
-bbbbhh 123 a 3 aa 4535 a 23 a bbbbhh 11684 0x5f /**/ /*dfvef*/ "hola"
+void 123 _id  static void _id for goto for auto

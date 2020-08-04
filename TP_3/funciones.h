@@ -161,3 +161,12 @@ free(aux);
 
 return frente;  
 }
+
+tipoLista *insertaPalabraReservada(tipoLista *l, char *yytext, struct Info x,char *tipo)
+{
+x.cadena=malloc(sizeof(yytext));
+strcpy(x.cadena,yytext);
+x.tipo=tipo;x.extra=0;
+l=Enqueue(l,x);
+return l;
+}
