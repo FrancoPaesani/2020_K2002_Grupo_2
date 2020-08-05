@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 struct Info{
 	char *tipo;
@@ -13,10 +14,43 @@ struct Info datos;
 struct lista *sgte;
 }tipoLista;
 
+
+int entero(float x){
+	if(x>0){return floor(x);}
+	else{return ceil(x);}
+}
+
 int comparaAlfabeticamente (struct Info x, tipoLista *nodo){
 
 	int a = strcmpi(x.cadena,nodo->datos.cadena);
 	return a;
+}
+
+void muestraNumeros(tipoLista *lista,int foo(char*,char**,int),char *tipo,int base)
+{
+	tipoLista *q;
+   	q = lista;           
+	int total=0;  
+	float f=0;
+   	while (q != NULL)       
+  	 {
+		if(strcmpi(tipo,"Real")==0){
+		f=atof(q->datos.cadena);
+		printf("TIPO: %s\n%s: %s -->",q->datos.tipo,tipo,q->datos.cadena);
+		total+=f;
+		printf("Entera: %i --> Mantisa: %f\n",entero(f),fabs( f-(entero(f)) ));}
+
+		else{
+		printf("TIPO: %s\n%s: %s\n",q->datos.tipo,tipo,q->datos.cadena);
+		total+=foo(q->datos.cadena,NULL,base);}
+
+      	q = q->sgte;              
+ 	 }
+	if(strcmpi(tipo,"Real")==0){
+	printf("El valor total acumulado de las constantes %s es --> %f",tipo,total);}
+	else{
+	printf("El valor total acumulado de las constantes %s es --> %i",tipo,total);}}
+  	printf("\n");
 }
 
 void muestraID(tipoLista *lista)
@@ -169,4 +203,23 @@ strcpy(x.cadena,yytext);
 x.tipo=tipo;x.extra=0;
 l=Enqueue(l,x);
 return l;
+}
+
+tipoLista *insertarLista(tipoLista *l, char *yytext, struct Info x,char *tipo){
+x.cadena=malloc(sizeof(yytext));
+strcpy(x.cadena,yytext);
+x.tipo=tipo;
+if(strcmpi("Identificador",tipo)==0)
+{x.extra=0;
+l=insertarOrdenadoeIncrementa(l,x);
+return l;}
+if(strcmpi("Literal Cadena",tipo)==0)
+{x.extra=strlen(yytext)-2;
+l=insertarPrimero(l,x);
+return l;}
+if(strncmp(tipo,"Digito",6)==0)
+{x.extra=0;
+l=insertarPrimero(l,x);
+return l;
+}
 }

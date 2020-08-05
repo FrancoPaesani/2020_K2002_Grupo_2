@@ -9,6 +9,11 @@
  tipoLista *listaId=NULL;
  tipoLista *listaCadenas=NULL;
  tipoLista *cola=NULL;
+ tipoLista *listaDecimal=NULL;
+ tipoLista *listaOctal=NULL;
+ tipoLista *listaHexa=NULL;
+ tipoLista *listaReal=NULL; 
+
  	struct Info d;
 	struct Info a;
 	struct Info c;
@@ -49,15 +54,16 @@ b.tipo="Literal Cadena";b.extra=strlen(yytext)-2;listaCadenas=insertarPrimero(li
 <comentarioVarias>[^\*]* 
 <comentarioVarias>\*+[^\/]*
 <comentarioVarias>\*\/   {{printf("Encontre varias lineas de comentarios: %s\n",yytext);}BEGIN(INITIAL);}
-[1-9]{DIGITO_DECIMAL}* {printf("Encontre una constante entera decimal \n");}
-0{DIGITO_OCTAL}* {printf("Encontre una constante entera octal \n");}
-0[xX]{DIGITO_HEXADECIMAL}+ {printf("Encontre una constante entera hexadecimal \n");}
-{DIGITO_DECIMAL}*\.{DIGITO_DECIMAL}+([Ee](\+|\-)?{DIGITO_DECIMAL}*)? {printf("Encontre una constante real: %s\n",yytext);}
-[a-zA-Z_][a-zA-Z0-9_]* {printf("Encontre un identificador: %s\n",yytext);n++;
-b.cadena=malloc(sizeof(yytext));									
-strcpy(b.cadena,yytext);														
-b.tipo="Identificador";b.extra=0;
-listaId=insertarOrdenadoeIncrementa(listaId,b);}
+[1-9]{DIGITO_DECIMAL}* {printf("Encontre una constante entera decimal %s \n",yytext);
+listaDecimal=insertarLista(listaDecimal,yytext,b,"Digito Decimal");}
+0{DIGITO_OCTAL}* {printf("Encontre una constante entera octal %s \n",yytext);
+listaOctal=insertarLista(listaOctal,yytext,b,"Digito Octal");}
+0[xX]{DIGITO_HEXADECIMAL}+ {printf("Encontre una constante entera hexadecimal \n");
+listaHexa=insertarLista(listaHexa,yytext,b,"Digito Hexadecimal");}
+{DIGITO_DECIMAL}*\.{DIGITO_DECIMAL}+([Ee](\+|\-)?{DIGITO_DECIMAL}*)? {printf("Encontre una constante real: %s\n",yytext);
+listaReal=insertarLista(listaReal,yytext,b,"Digito Real");}
+[a-zA-Z_][a-zA-Z0-9_]* {printf("Encontre un identificador: %s\n",yytext);
+listaId=insertarLista(listaId,yytext,b,"Identificador");}
 %%
 
 int main(){
@@ -67,5 +73,9 @@ int main(){
 	 muestraID(cola);
      muestraID(listaId);
 	 muestraCadena(listaCadenas);
+	 muestraNumeros(listaDecimal,strtol,"Decimal",10);
+	 muestraNumeros(listaOctal,strtol,"Octal",8);
+	 muestraNumeros(listaHexa,strtol,"Hexadecimal",16);
+	 muestraNumeros(listaReal,strtol,"Real",0);
 }
 
