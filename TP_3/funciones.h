@@ -32,16 +32,17 @@ void muestraNumeros(tipoLista *lista,int foo(char*,char**,int),char *tipo,int ba
    	q = lista;           
 	int total=0;  
 	float f=0;
+	printf("Categoria: %s\n",q->datos.tipo);
    	while (q != NULL)       
   	 {
 		if(strcmpi(tipo,"Real")==0){
 		f=atof(q->datos.cadena);
-		printf("TIPO: %s\n%s: %s -->",q->datos.tipo,tipo,q->datos.cadena);
+		printf("%s: %s -->",tipo,q->datos.cadena);
 		total+=f;
 		printf("Entera: %i --> Mantisa: %f\n",entero(f),fabs( f-(entero(f)) ));}
 
 		else{
-		printf("TIPO: %s\n%s: %s\n",q->datos.tipo,tipo,q->datos.cadena);
+		printf("%s: %s\n",tipo,q->datos.cadena);
 		total+=foo(q->datos.cadena,NULL,base);}
 
       	q = q->sgte;              
@@ -49,32 +50,37 @@ void muestraNumeros(tipoLista *lista,int foo(char*,char**,int),char *tipo,int ba
 	if(strcmpi(tipo,"Real")==0){
 	printf("El valor total acumulado de las constantes %s es --> %f",tipo,total);}
 	else{
-	printf("El valor total acumulado de las constantes %s es --> %i",tipo,total);}}
-  	printf("\n");
+	printf("El valor total acumulado de las constantes %s es --> %i",tipo,total);}
+  	printf("\n----------------------------------------------\n");
 }
 
-void muestraID(tipoLista *lista)
+void muestra(tipoLista *lista)
 {
 	tipoLista *q;
-   	q = lista;               
+   	q = lista; 
+	printf("Categoria: %s\n",q->datos.tipo);
    	while (q != NULL)       
   	 {
-    	printf("TIPO: %s\nCADENA: %s\nCANTIDAD: %i\n",q->datos.tipo,q->datos.cadena,q->datos.extra+1);
+		if(strcmp("Identificador",q->datos.tipo)==0 || strcmp("CaracterPuntuacion",q->datos.tipo)==0){
+    	printf("CADENA: %s\nCANTIDAD: %i\n\n",q->datos.cadena,q->datos.extra+1);
       	q = q->sgte;              
- 	 }
-  	 printf("\n");
+ 	 	}
+	    else{printf("CADENA: %s\nCANTIDAD: %i\n",q->datos.cadena,q->datos.extra);
+      	q = q->sgte;}
+}
+  	 printf("\n----------------------------------------------\n");
 }
 
 void muestraCadena(tipoLista *lista)
 {
 	tipoLista *q;
    	q = lista;               
+	printf("Categoria: %s\n",q->datos.tipo);
    	while (q != NULL)       
   	 {
-    	printf("TIPO: %s\nCADENA: %s\nCANTIDAD: %i\n",q->datos.tipo,q->datos.cadena,q->datos.extra);
+    	printf("CADENA: %s\nCANTIDAD: %i\n",q->datos.cadena,q->datos.extra);
       	q = q->sgte;              
  	 }
-  	 printf("\n");
 }
 
 
@@ -90,7 +96,6 @@ tipoLista *insertarPrimero (tipoLista *l,struct Info x){
 		if(l==NULL){
 			l=q;
 			q->sgte=NULL;
-			printf("Lista esta vacia\n");
 		}
 		else{
 			q->sgte=l;
@@ -199,7 +204,10 @@ return frente;
 tipoLista *insertaPalabraReservada(tipoLista *l, char *yytext, struct Info x,char *tipo)
 {
 x.cadena=malloc(sizeof(yytext));
-strcpy(x.cadena,yytext);
+
+if(strcmpi(tipo,"ComentarioSimple")==0){x.cadena=yytext;}
+else{strcpy(x.cadena,yytext);}
+
 x.tipo=tipo;x.extra=0;
 l=Enqueue(l,x);
 return l;
@@ -209,7 +217,7 @@ tipoLista *insertarLista(tipoLista *l, char *yytext, struct Info x,char *tipo){
 x.cadena=malloc(sizeof(yytext));
 strcpy(x.cadena,yytext);
 x.tipo=tipo;
-if(strcmpi("Identificador",tipo)==0)
+if(strcmpi("Identificador",tipo)==0 || strcmpi("CaracterPuntuacion",tipo)==0 )
 {x.extra=0;
 l=insertarOrdenadoeIncrementa(l,x);
 return l;}

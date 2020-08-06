@@ -1,1 +1,6 @@
-void 10 _id  static void _id for goto for auto  1 01 01 0 010 0X1 0xA 1.4 -1.4
+int main(){
+//jhcdk 
+int a = 1;
+intb=2;
+char *a="cadena";
+}
