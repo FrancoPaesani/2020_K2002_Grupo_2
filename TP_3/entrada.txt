@@ -1,13 +1,17 @@
 int main(){
+char b = 3 ;
+059
 //gh  hkhfkhvkfhk   lijlf41536_mkmlkm
-h
 /*vgfb            tkn
 ghj
 
 */
-j
+10
+1a54  ;
+void;
 int a = 1;
-intb=2;
+/**/
+int b = 22;
 '''
 0xE
 100.1e-2
