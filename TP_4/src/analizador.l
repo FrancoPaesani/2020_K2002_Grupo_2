@@ -6,13 +6,36 @@
     #include "utiles.h"
 %}
 
-/*
-DATOS LEX
-*/
+NOVA .
+SECUENCIA_ESCAPE_SIMPLE [\' | \" | \? | \\ | a | b | f | n | r | t | v]
+DIGITO_DECIMAL [0-9]
+DIGITO_OCTAL [0-7]
+DIGITO_HEXADECIMAL [0-9a-fA-F]
+ESCAPE_OCTAL {DIGITO_OCTAL}{DIGITO_OCTAL}?{DIGITO_OCTAL}?
+ESCAPE_HEXADECIMAL x{DIGITO_HEXADECIMAL}{DIGITO_HEXADECIMAL}?
+CONSTANTE_CARACTER ([^\'\\]|\\({SECUENCIA_ESCAPE_SIMPLE}|{ESCAPE_OCTAL}|{ESCAPE_HEXADECIMAL}))
+CARACTER_PUNTUACION [(\[\]\(\)\{\}\.]|\-\>|\+\+|\-\-|[\&\*\+\-\~\!\/\%]|\<\<|\>\>|[\<\>]|\<\=|\>\=|\=\=|\!\=|^|\||\&\&|\|\||\=|\*\=|\/\=|\%\=|\+\=|\-\=|\<\<\=|\>\>\=|\&\=|\^\=|\|\=|\;        
+TIPO_DATO char|double|float|int|long|short|struct|unsigned|typedef|signed|enum|union
+FUNCIONES do|for|goto|if|else|sizeof|while|case|break|return|switch|default|continue
+DATO_RETORNO void|static
+CLASE_ALMACENAMIENTO auto|extern|register
+MANEJO_DATO volatile|const
 
 %%
 
-/* REGLAS LEX */
-
+[\n] {return '\n';}
+"="  {return '=';}
+{CARACTER_PUNTUACION} {printf("Encontre un caracter de puntuacion: %s\n",yytext);return CARACTER_PUNTUACION;}
+{TIPO_DATO} {printf("Encontre un tipo de dato: %s\n",yytext);return RESERVADA;}
+{FUNCIONES} {printf("Encontre una funcion: %s\n",yytext);return RESERVADA;}
+{DATO_RETORNO} {printf("Encontre un tipo de dato de retorno: %s\n",yytext);return RESERVADA;}
+{CLASE_ALMACENAMIENTO} {printf("Encontre una clase de almacenamiento: %s\n",yytext);return RESERVADA;}
+{MANEJO_DATO} {printf("Encontre una forma de manejo de datos: %s\n",yytext);return RESERVADA;}
+"//"[^\n]* {printf("Encontre una linea de comentarios: %s\n",yytext);}
+[1-9]{DIGITO_DECIMAL}*/[^a-zA-Z] {yylval.myStruct.valor_entero = atoi(yytext);printf("Encontre una constante entera decimal %s \n",yytext);return NUM;}
+0{DIGITO_OCTAL}*/[^a-zA-Z] {yylval.myStruct.valor_entero = atoi(yytext);printf("Encontre una constante entera octal %s \n",yytext);return NUM;}
+0[xX]{DIGITO_HEXADECIMAL}+/[^a-zA-Z] {printf("Encontre una constante entera hexadecimal \n");return NUM;}
+{DIGITO_DECIMAL}*\.{DIGITO_DECIMAL}+([Ee](\+|\-)?{DIGITO_DECIMAL}*)?/[^a-zA-Z] {printf("Encontre una constante real: %s\n",yytext);return NUM;}
+[a-zA-Z_][a-zA-Z0-9_]* {yylval.myStruct.valor_string = malloc(sizeof(yytext));strcpy(yylval.myStruct.valor_string,yytext);printf("Encontre un identificador: %s\n",yytext);return ID;}
+[.]* {printf("Caracter no reconocido %s.\n",yytext);return NO_RECONOCIDO;}
 %%
-
