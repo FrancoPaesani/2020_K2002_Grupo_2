@@ -7,6 +7,8 @@ int yylex();
 int yywrap(){
 	return(1);
 }
+
+int valor;
 %}
 
 %union {
@@ -26,7 +28,9 @@ struct yylaval_struct{
 %token <myStruct> NO_RECONOCIDO
 %token <myStruct> CARACTER_PUNTUACION
 
-%type <myStruct> exp
+%type <myStruct> expresion
+%type <myStruct> declaracion
+
 %%
 
 input:    /* vacio */
@@ -34,14 +38,62 @@ input:    /* vacio */
 ;
 
 line:     '\n'
-        | exp '\n'  { printf ("\t %d\n", $1); }
+        | expresion '\n'  { printf ("\t %d\n", $1);}
+        | declaracion '\n'
 ;
 
-exp:     NUM  {printf("Encontre un NUMERO Y APARECE--> %d\n",$<myStruct>1.valor_entero);}
-        | ID  {printf("Encontre un ID --> %s\n",$<myStruct>1.valor_string);}
-        | '=' {printf("Encontre un IGUAL");}
-        | ID '=' NUM {printf("Se inicializ%c la variable %s con el valor %d\n",162,$<myStruct>1.valor_string,$<myStruct>3.valor_entero);}
-;   
+expresion: expUnaria operAsignacion expresion
+                | expUnaria
+;
+
+operAsignacion: '='
+                |"+="
+;
+
+expUnaria: expPostfijo
+;
+operUnario:     '&' 
+                | '*'
+                | '–'
+                | '!'
+;
+expPostfijo: expPrimaria
+;
+listaArgumentos: expresion
+;
+expPrimaria:    ID    
+                | NUM
+        
+;
+
+declaracion:                    especificadoresDeclaracion listaDeclaradores    {printf("SE DECLARO LA VARIBLE <%s> DE TIPO --> %s con el valor = %i. ",$<myStruct>2.valor_string,$<myStruct>1.valor_string,valor);}
+;
+especificadoresDeclaracion:     /* vacio */
+                                | especificadorAlmacenamiento especificadoresDeclaracion 
+                                | especificadorTipo especificadoresDeclaracion
+                                | calificadorTipo especificadoresDeclaracion
+;
+especificadorAlmacenamiento:    RESERVADA
+;
+especificadorTipo:              RESERVADA        
+;
+calificadorTipo:                RESERVADA
+;
+listaDeclaradores:              /* vacio */
+                                | declarador
+                                | listaDeclaradores , declarador
+;
+declarador:                     decla 
+                                | decla '=' inicializador {valor = $<myStruct>3.valor_entero;}
+;
+inicializador:                  expresion
+;
+decla:                          declaradorDirecto
+;
+declaradorDirecto:              ID 
+                                | '(' decla ')' 
+
+
 
 %%
 
@@ -50,3 +102,4 @@ int main(){
     saludar();
     yyparse();
 }
+//    | ID operAsignacion NUM {printf("Se asigno el valor %i a la variable %s\n",$<myStruct>3.valor_entero,$<myStruct>1.valor_string);}
