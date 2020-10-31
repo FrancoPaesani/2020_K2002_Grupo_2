@@ -1,5 +1,5 @@
 #include "utiles.h"
 
 void* saludar(){
-    printf("Hola...\n");
+    printf("Bienvenido al Analizador Sint%cctico...\n\n",160);
 }
