@@ -78,6 +78,9 @@ struct yylaval_struct{
 %token <puntuacion> CORCHETEC
 %token <puntuacion> PARENTESISA
 %token <puntuacion> PARENTESISC
+%token <puntuacion> MENOR
+%token <puntuacion> MAYOR
+%token <puntuacion> MAS
 
 
 %type <myStruct> expresion
@@ -97,27 +100,94 @@ line:     '\n'
 ;
 
 //Empieza expresion
-expresion:                      expUnaria operAsignacion expresion
-                                | expUnaria
+expresion:                      expresionAsignacion
+                                | expresion ',' expresionAsignacion
+;
+expresionAsignacion:            expresionCondicional
+                                | expresionUnaria operAsignacion expresionAsignacion
                                 | /*vacio*/
+;
+expresionCondicional:           expresionOLogico
+                                | expresionOLogico expresion ':' expresionCondicional
+                                | expresion ':' expresionCondicional
+;
+expresionConstante:             expresionCondicional
+                                | /*    vacio   */
+;
+expresionOLogico:               expresionYLogico
+                                | expresionOLogico '|''|' expresionYLogico
+;
+expresionYLogico:               expresionOInclusivo
+                                | expresionYLogico AND AND expresionOInclusivo              
+;
+expresionOInclusivo:            expresionOExcluyente
+                                | expresionOInclusivo '|' expresionOExcluyente
+;
+expresionOExcluyente:           expresionY
+                                | expresionOExcluyente '^' expresionY
+;
+expresionY:                     expresionIgualdad
+                                | expresionY AND expresionIgualdad
+;
+expresionIgualdad:              expresionRelacional
+                                | expresionIgualdad IGUAL IGUAL expresionRelacional
+                                | expresionIgualdad DISTINTO IGUAL expresionRelacional
+;
+expresionRelacional:            expresionCorrimiento
+                                | expresionRelacional MENOR expresionCorrimiento
+                                | expresionRelacional MAYOR expresionCorrimiento
+                                | expresionRelacional MENOR IGUAL expresionCorrimiento
+                                | expresionRelacional MAYOR IGUAL expresionCorrimiento
+;
+expresionCorrimiento:           expresionAditiva
+                                | expresionCorrimiento MENOR MENOR expresionAditiva
+                                | expresionCorrimiento MAYOR MAYOR expresionAditiva
+;
+expresionAditiva:               expresionMultiplicativa
+                                | expresionAditiva MAS expresionMultiplicativa
+                                | expresionAditiva MENOS expresionMultiplicativa
+;
+expresionMultiplicativa:        expresionConversion
+                                | expresionMultiplicativa POR expresionConversion
+                                | expresionMultiplicativa '/' expresionConversion
+                                | expresionMultiplicativa '%' expresionConversion
+;
+expresionConversion:            expresionUnaria
+                                | PARENTESISA nombreTipo PARENTESISC expresionConversion             
+;
+expresionUnaria:                expresionSufijo
+                                | MAS MAS expresionUnaria
+                                | MENOS MENOS expresionUnaria
+                                | operadorUnario expresionConversion
+                                | SIZEOF expresionUnaria
+                                | SIZEOF PARENTESISA nombreTipo PARENTESISC
+;
+expresionSufijo:                expresionPrimaria
+                                | expresionSufijo CORCHETEA expresion CORCHETEC
+                                | expresionSufijo PARENTESISA listaArgumentos PARENTESISC
+                                | expresionSufijo '.' ID
+                                | expresionSufijo MENOS MAYOR ID
+                                | expresionSufijo MAS MAS
+                                | expresionSufijo MENOS MENOS
+;
+expresionPrimaria:              ID
+                                | NUM
+                           //     | constante
+                           //     | constanteCadena
+                                | PARENTESISA expresion PARENTESISC
+;
+nombreTipo:                     /* completar    */
 ;
 operAsignacion:                 IGUAL  
                                 | MASIGUAL
 ;
-expUnaria:                      expPostfijo
-;
-operUnario:                     AND
+operadorUnario:                 AND
                                 | POR
                                 | MENOS
                                 | DISTINTO
 ;
-expPostfijo:                    expPrimaria
-;
-listaArgumentos:                expresion
-;
-expPrimaria:                    ID    
-                                | NUM
-        
+listaArgumentos:                expresionAsignacion
+                                | listaArgumentos ',' expresionAsignacion
 ;
 
 //Empieza declaracion
@@ -141,12 +211,25 @@ listaDeclaradores:              declarador
 declarador:                     decla 
                                 | decla IGUAL inicializador {valor = $<myStruct>3.valor_entero;}
 ;
-inicializador:                  expresion
+inicializador:                  expresionAsignacion
+                                | '{' listaInicializadores ',' '}'
 ;
-decla:                          declaradorDirecto
+listaInicializadores:           inicializador
+                                | listaInicializadores ',' inicializador
+;
+puntero:                        POR listaCalificadoresTipo
+                                | POR listaCalificadoresTipo puntero
+                                | /*    vacio   */
+;
+listaCalificadoresTipo:         calificadorTipo
+                                | listaCalificadoresTipo calificadorTipo
+                                | /*    vacio   */
+;
+decla:                          puntero declaradorDirecto
+                                | declaradorDirecto
 ;
 declaradorDirecto:              PARENTESISA decla PARENTESISC {printf("parentesis DECLA\n");}
-                                | declaradorDirecto CORCHETEA expresion CORCHETEC {printf("Corchete decla\n");}
+                                | declaradorDirecto CORCHETEA expresionConstante CORCHETEC {printf("Corchete decla\n");}
                                 | ID {printf("ID EN DECLA DIRECTO\n\n");}
 ;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -158,7 +241,8 @@ sentencia:                      sentenciaExp
                                 | sentenciaEtiq
                                 | sentenciaSalto
 ;
-sentenciaExp:                   expresion
+sentenciaExp:                   expresion ';'
+                                ';'
 ;
 sentenciaComp:                  '{' listaDeclaraciones listaSentencias '}'
 ;

@@ -49,6 +49,7 @@ CONST const
 DO do
 AND \&
 POR \*
+MAS \+
 MENOS \-
 DISTINTO \!
 IGUAL \=
@@ -61,12 +62,15 @@ CORCHETEC "["
 CORCHETEA "]"
 PARENTESISC \)
 PARENTESISA \(
+MAYOR \>
+MENOR "<"
 
 %%
 {ESPECIFICADORCLASE}    {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return ESPECIFICADORCLASE;}
 {ESPECIFICADORTIPO}     {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return ESPECIFICADORTIPO;}
 {CALIFICADORTIPO}       {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return CALIFICADORTIPO;}
 {ESPSTRUCTUNION}        {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return ESPSTRUCTUNION;}
+"sizeof"                {return SIZEOF;}
 "break"                 {return BREAK;}  
 "case"                  {return CASE;}  
 "continue"              {return CONTINUE;}    
@@ -84,12 +88,16 @@ PARENTESISA \(
 [a-zA-Z_][a-zA-Z0-9_]* {yylval.myStruct.valor_string = malloc(sizeof(yytext));strcpy(yylval.myStruct.valor_string,yytext);return ID;}
 {AND} {return AND;}
 {POR} {return POR;}
+{MAS} {return MAS;}
 {MENOS} {return MENOS;}
 {DISTINTO} {return DISTINTO;}
-{IGUAL} {printf("Encontre un IGUAL\n");return IGUAL;}
+{IGUAL} {return IGUAL;}
 {MASIGUAL} {return MASIGUAL;}
+{MENOR} {printf("UN MENOR\n");return MENOR;}
+{MAYOR} {return MAYOR;}
+{PARENTESISA} {return PARENTESISA;}
+{PARENTESISC} {return PARENTESISC;}
 [\n] {return '\n';}
-"+" {return '+';}
 "-" {return '-';}
 "." {return '.';}
 "," {return ',';}
@@ -99,13 +107,8 @@ PARENTESISA \(
 "]" {return CORCHETEC;}
 "{" {return '{';}
 "}" {return '}';}
-{PARENTESISA} {return PARENTESISA;}
-{PARENTESISC} {return PARENTESISC;}
-"-" {return '-';}
+"*" {return '*';}
 ";" {return ';';}
-"=" {return '=';}
-"="  {return '=';}
-{CARACTER_PUNTUACION} {printf("Encontre un caracter de puntuacion: %s\n",yytext);return CARACTER_PUNTUACION;}
 "//"[^\n]* {printf("Encontre una linea de comentarios: %s\n",yytext);}
 [1-9]{DIGITO_DECIMAL}*/[^a-zA-Z] {yylval.myStruct.valor_entero = atoi(yytext);return NUM;}
 0{DIGITO_OCTAL}*/[^a-zA-Z] {yylval.myStruct.valor_entero = atoi(yytext);return NUM;}
