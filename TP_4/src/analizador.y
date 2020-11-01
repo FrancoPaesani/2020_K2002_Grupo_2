@@ -19,6 +19,7 @@ struct yylaval_struct{
         char* valor_string;
         char* operador;
         char* especificador;
+        char* puntuacion;
         int entero;
         int valor_entero;
         //struct symrec *sval;
@@ -73,6 +74,11 @@ struct yylaval_struct{
 %token <especificador> ESPECIFICADORTIPO
 %token <especificador> CALIFICADORTIPO
 %token <especificador> ESPSTRUCTUNION
+%token <puntuacion> CORCHETEA
+%token <puntuacion> CORCHETEC
+%token <puntuacion> PARENTESISA
+%token <puntuacion> PARENTESISC
+
 
 %type <myStruct> expresion
 %type <myStruct> declaracion
@@ -95,8 +101,8 @@ expresion:                      expUnaria operAsignacion expresion
                                 | expUnaria
                                 | /*vacio*/
 ;
-operAsignacion:                  IGUAL  
-                                 | MASIGUAL
+operAsignacion:                 IGUAL  
+                                | MASIGUAL
 ;
 expUnaria:                      expPostfijo
 ;
@@ -139,12 +145,13 @@ inicializador:                  expresion
 ;
 decla:                          declaradorDirecto
 ;
-declaradorDirecto:              ID 
-                                | '(' decla ')' 
+declaradorDirecto:              PARENTESISA decla PARENTESISC {printf("parentesis DECLA\n");}
+                                | declaradorDirecto CORCHETEA expresion CORCHETEC {printf("Corchete decla\n");}
+                                | ID {printf("ID EN DECLA DIRECTO\n\n");}
 ;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //Empieza sentencia
-sentencia:                      sentenciaExp 
+sentencia:                      sentenciaExp   
                                 | sentenciaComp
                                 | sentenciaSel
                                 | sentenciaIt 
@@ -164,13 +171,13 @@ listaSentencias:                sentencia
                                 | /* vacio  */
 ;
 
-sentenciaSel:                   IF '(' expresion ')' sentencia
-                                | IF '(' expresion ')' sentencia ELSE sentencia
-                                | SWITCH '(' expresion ')' sentencia
+sentenciaSel:                   IF PARENTESISA expresion PARENTESISC sentencia
+                                | IF PARENTESISA expresion PARENTESISC sentencia ELSE sentencia
+                                | SWITCH PARENTESISA expresion PARENTESISC sentencia
 ;
-sentenciaIt:                    WHILE '(' expresion ')' sentencia
-                                | DO sentencia WHILE '(' expresion ')' ';'
-                                | FOR '(' expresion ';' expresion ';' expresion ')' sentencia
+sentenciaIt:                    WHILE PARENTESISA expresion PARENTESISC sentencia
+                                | DO sentencia WHILE PARENTESISA expresion PARENTESISC ';'
+                                | FOR PARENTESISA expresion ';' expresion ';' expresion PARENTESISC sentencia
 ;
 sentenciaEtiq:                  CASE expresion ':' sentencia
                                 | DEFAULT ':' sentencia

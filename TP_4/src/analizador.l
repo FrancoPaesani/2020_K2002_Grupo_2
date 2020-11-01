@@ -57,13 +57,16 @@ ESPECIFICADORCLASE typedef|static|auto|register|extern
 ESPECIFICADORTIPO void|char|short|int|long|float|double|signed|unsigned
 CALIFICADORTIPO const|volatile
 ESPSTRUCTUNION struct|union
+CORCHETEC "["
+CORCHETEA "]"
+PARENTESISC \)
+PARENTESISA \(
 
 %%
 {ESPECIFICADORCLASE}    {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return ESPECIFICADORCLASE;}
 {ESPECIFICADORTIPO}     {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return ESPECIFICADORTIPO;}
 {CALIFICADORTIPO}       {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return CALIFICADORTIPO;}
 {ESPSTRUCTUNION}        {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return ESPSTRUCTUNION;}
-[a-zA-Z_][a-zA-Z0-9_]* {yylval.myStruct.valor_string = malloc(sizeof(yytext));strcpy(yylval.myStruct.valor_string,yytext);return ID;}
 "break"                 {return BREAK;}  
 "case"                  {return CASE;}  
 "continue"              {return CONTINUE;}    
@@ -77,7 +80,8 @@ ESPSTRUCTUNION struct|union
 "if"                    {return IF;}
 "return"                {return RETURN;}
 "switch"                {return SWITCH;}
-"while"                 {return WHILE;}
+"while"                 {printf("UNWHILE FLEX\n");return WHILE;}
+[a-zA-Z_][a-zA-Z0-9_]* {yylval.myStruct.valor_string = malloc(sizeof(yytext));strcpy(yylval.myStruct.valor_string,yytext);return ID;}
 {AND} {return AND;}
 {POR} {return POR;}
 {MENOS} {return MENOS;}
@@ -91,8 +95,12 @@ ESPSTRUCTUNION struct|union
 "," {return ',';}
 ":" {return ':';}
 "!" {return '!';}
-"(" {return '(';}
-")" {return ")";}
+"[" {return CORCHETEA;}
+"]" {return CORCHETEC;}
+"{" {return '{';}
+"}" {return '}';}
+{PARENTESISA} {return PARENTESISA;}
+{PARENTESISC} {return PARENTESISC;}
 "-" {return '-';}
 ";" {return ';';}
 "=" {return '=';}
