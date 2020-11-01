@@ -47,40 +47,43 @@ REGISTER register
 VOLATILE volatile
 CONST const
 DO do
+AND \&
+POR \*
+MENOS \-
+DISTINTO \!
+IGUAL \=
+MASIGUAL \+\=
+ESPECIFICADORCLASE typedef|static|auto|register|extern
+ESPECIFICADORTIPO void|char|short|int|long|float|double|signed|unsigned
+CALIFICADORTIPO const|volatile
+ESPSTRUCTUNION struct|union
 
 %%
-
-"auto"              {return AUTO;}
-"break"             {return BREAK;}  
-"case"              {return CASE;}  
-"char"              {return CHAR;}
-"const"             {return CONST;}
-"continue"          {return CONTINUE;}    
-"default"           {return DEFAULT;}
-"do"                {return DO;}
-"double"            {return DOUBLE;}
-"else"              {return ELSE;}
-"enum"              {return ENUM;}
-"extern"            {return EXTERN;}
-"float"             {return FLOAT;}
-"for"               {return FOR;}
-"goto"              {return GOTO;}
-"if"                {return IF;}
-"int"               {return INT;}
-"long"              {return LONG;}
-"register"          {return REGISTER;}
-"return"            {return RETURN;}
-"short"             {return SHORT;}
-"signed"            {return SIGNED;}
-"static"            {return STATIC;}
-"struct"            {return STRUCT;}
-"switch"            {return SWITCH;}
-"typedef"           {return TYPEDEF;}
-"union"             {return UNION;}
-"unsigned"          {return UNSIGNED;}
-"void"              {return VOID;}
-"volatile"          {return VOLATILE;}
-"while"             {return WHILE;}
+{ESPECIFICADORCLASE}    {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return ESPECIFICADORCLASE;}
+{ESPECIFICADORTIPO}     {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return ESPECIFICADORTIPO;}
+{CALIFICADORTIPO}       {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return CALIFICADORTIPO;}
+{ESPSTRUCTUNION}        {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return ESPSTRUCTUNION;}
+[a-zA-Z_][a-zA-Z0-9_]* {yylval.myStruct.valor_string = malloc(sizeof(yytext));strcpy(yylval.myStruct.valor_string,yytext);return ID;}
+"break"                 {return BREAK;}  
+"case"                  {return CASE;}  
+"continue"              {return CONTINUE;}    
+"default"               {return DEFAULT;}
+"do"                    {return DO;}
+"double"                {return DOUBLE;}
+"else"                  {return ELSE;}
+"enum"                  {return ENUM;}
+"for"                   {return FOR;}
+"goto"                  {return GOTO;}
+"if"                    {return IF;}
+"return"                {return RETURN;}
+"switch"                {return SWITCH;}
+"while"                 {return WHILE;}
+{AND} {return AND;}
+{POR} {return POR;}
+{MENOS} {return MENOS;}
+{DISTINTO} {return DISTINTO;}
+{IGUAL} {printf("Encontre un IGUAL\n");return IGUAL;}
+{MASIGUAL} {return MASIGUAL;}
 [\n] {return '\n';}
 "+" {return '+';}
 "-" {return '-';}
@@ -100,6 +103,5 @@ DO do
 0{DIGITO_OCTAL}*/[^a-zA-Z] {yylval.myStruct.valor_entero = atoi(yytext);return NUM;}
 0[xX]{DIGITO_HEXADECIMAL}+/[^a-zA-Z] {return NUM;}
 {DIGITO_DECIMAL}*\.{DIGITO_DECIMAL}+([Ee](\+|\-)?{DIGITO_DECIMAL}*)?/[^a-zA-Z] {return NUM;}
-[a-zA-Z_][a-zA-Z0-9_]* {yylval.myStruct.valor_string = malloc(sizeof(yytext));strcpy(yylval.myStruct.valor_string,yytext);return ID;}
 [.]* {printf("Caracter no reconocido %s.\n",yytext);return NO_RECONOCIDO;}
 %%

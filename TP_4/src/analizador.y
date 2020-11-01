@@ -14,10 +14,14 @@ int valor;
 %union {
 
 struct yylaval_struct{
+        char charcito;
         char* cadena;
         char* valor_string;
+        char* operador;
+        char* especificador;
         int entero;
         int valor_entero;
+        //struct symrec *sval;
 }myStruct;
 
 }
@@ -59,14 +63,21 @@ struct yylaval_struct{
 %token <myStruct> VOLATILE
 %token <myStruct> CONST
 %token <myStruct> DO
-
-
-
-
+%token <myStruct> AND
+%token <myStruct> POR
+%token <myStruct> MENOS
+%token <myStruct> DISTINTO
+%token <myStruct> IGUAL
+%token <myStruct> MASIGUAL
+%token <especificador> ESPECIFICADORCLASE
+%token <especificador> ESPECIFICADORTIPO
+%token <especificador> CALIFICADORTIPO
+%token <especificador> ESPSTRUCTUNION
 
 %type <myStruct> expresion
 %type <myStruct> declaracion
 
+%right IGUAL
 %%
 
 input:    /* vacio */
@@ -74,55 +85,55 @@ input:    /* vacio */
 ;
 
 line:     '\n'
-        | expresion '\n'  { printf ("\t %d\n", $1);}
-        | declaracion '\n'
-        | sentencia '\n' {printf("entramos a una sentencia");}
+        | expresion '\n' {printf("\n expresion goes brrr\n");}
+        | declaracion '\n' {printf("encontramos una declaracion\n");}
+        | sentencia '\n' {printf("entramos a una sentencia\n");}
 ;
 
 //Empieza expresion
-expresion: expUnaria operAsignacion expresion
-                | expUnaria
-                | /*vacio*/
+expresion:                      expUnaria operAsignacion expresion
+                                | expUnaria
+                                | /*vacio*/
 ;
-operAsignacion: '='
-                |"+="
+operAsignacion:                  IGUAL  
+                                 | MASIGUAL
 ;
-expUnaria: expPostfijo
+expUnaria:                      expPostfijo
 ;
-operUnario:     '&' 
-                | '*'
-                | '–'
-                | '!'
+operUnario:                     AND
+                                | POR
+                                | MENOS
+                                | DISTINTO
 ;
-expPostfijo: expPrimaria
+expPostfijo:                    expPrimaria
 ;
-listaArgumentos: expresion
+listaArgumentos:                expresion
 ;
-expPrimaria:    ID    
-                | NUM
+expPrimaria:                    ID    
+                                | NUM
         
 ;
 
 //Empieza declaracion
-declaracion:                    especificadoresDeclaracion listaDeclaradores    {printf("SE DECLARO LA VARIBLE <%s> DE TIPO --> %s con el valor = %i. \n",$<myStruct>2.valor_string,$<myStruct>1.valor_string,valor);}
+declaracion:                    especificadoresDeclaracion listaDeclaradores    {printf("SE DECLARO LA VARIBLE <%s> DE TIPO --> %s con el valor = %i. \n",$<myStruct>2.valor_string,$<myStruct>1.especificador,valor);}
 ;
-especificadoresDeclaracion:     /* vacio */
-                                | especificadorAlmacenamiento especificadoresDeclaracion 
+especificadoresDeclaracion:     especificadorAlmacenamiento especificadoresDeclaracion
                                 | especificadorTipo especificadoresDeclaracion
                                 | calificadorTipo especificadoresDeclaracion
+                                | /* vacio */
 ;
-especificadorAlmacenamiento:    "RESERVADA"
+especificadorAlmacenamiento:    ESPECIFICADORCLASE
 ;
-especificadorTipo:              "RESERVADA"
+especificadorTipo:              ESPECIFICADORTIPO
 ;
-calificadorTipo:                "RESERVADA"
+calificadorTipo:                CALIFICADORTIPO
 ;
-listaDeclaradores:              /* vacio */
-                                | declarador
-                                | listaDeclaradores , declarador
+listaDeclaradores:              declarador
+                                | listaDeclaradores ',' declarador
+                                | /* vacio */
 ;
 declarador:                     decla 
-                                | decla '=' inicializador {valor = $<myStruct>3.valor_entero;}
+                                | decla IGUAL inicializador {valor = $<myStruct>3.valor_entero;}
 ;
 inicializador:                  expresion
 ;
@@ -131,7 +142,7 @@ decla:                          declaradorDirecto
 declaradorDirecto:              ID 
                                 | '(' decla ')' 
 ;
-
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //Empieza sentencia
 sentencia:                      sentenciaExp 
                                 | sentenciaComp
@@ -146,9 +157,11 @@ sentenciaComp:                  '{' listaDeclaraciones listaSentencias '}'
 ;
 listaDeclaraciones:             declaracion
                                 | listaDeclaraciones declaracion
+                                | /* vacio */
 ;
 listaSentencias:                sentencia
                                 | listaSentencias sentencia
+                                | /* vacio  */
 ;
 
 sentenciaSel:                   IF '(' expresion ')' sentencia
