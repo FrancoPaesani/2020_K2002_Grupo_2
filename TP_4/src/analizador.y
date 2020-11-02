@@ -9,6 +9,8 @@ int yywrap(){
 }
 
 int valor;
+int api;
+symrec* aux;
 %}
 
 %union {
@@ -81,7 +83,7 @@ struct yylaval_struct{
 %token <puntuacion> MENOR
 %token <puntuacion> MAYOR
 %token <puntuacion> MAS
-
+%token <puntuacion> COMILLA
 
 %type <myStruct> expresion
 %type <myStruct> declaracion
@@ -171,9 +173,9 @@ expresionSufijo:                expresionPrimaria
                                 | expresionSufijo MENOS MENOS
 ;
 expresionPrimaria:              ID
-                                | NUM
-                           //     | constante
-                           //     | constanteCadena
+                                | NUM   {valor = $<myStruct>1.valor_entero;}
+                           //     |  constante 
+                                | COMILLA ID COMILLA
                                 | PARENTESISA expresion PARENTESISC
 ;
 nombreTipo:                     /* completar    */
@@ -191,7 +193,7 @@ listaArgumentos:                expresionAsignacion
 ;
 
 //Empieza declaracion
-declaracion:                    especificadoresDeclaracion listaDeclaradores    {printf("SE DECLARO LA VARIBLE <%s> DE TIPO --> %s con el valor = %i. \n",$<myStruct>2.valor_string,$<myStruct>1.especificador,valor);}
+declaracion:                    especificadoresDeclaracion listaDeclaradores    //{printf("SE DECLARO LA VARIBLE <%s> DE TIPO --> %s con el valor = %i. \n",$<myStruct>2.valor_string,$<myStruct>1.especificador,valor);}
 ;
 especificadoresDeclaracion:     especificadorAlmacenamiento especificadoresDeclaracion
                                 | especificadorTipo especificadoresDeclaracion
@@ -209,7 +211,7 @@ listaDeclaradores:              declarador
                                 | /* vacio */
 ;
 declarador:                     decla 
-                                | decla IGUAL inicializador {valor = $<myStruct>3.valor_entero;}
+                                | decla IGUAL inicializador {valor = $<myStruct>3.valor_entero;} //analizar si existe inicializador en caso de ser ID
 ;
 inicializador:                  expresionAsignacion
                                 | '{' listaInicializadores ',' '}'
@@ -230,7 +232,7 @@ decla:                          puntero declaradorDirecto
 ;
 declaradorDirecto:              PARENTESISA decla PARENTESISC {printf("parentesis DECLA\n");}
                                 | declaradorDirecto CORCHETEA expresionConstante CORCHETEC {printf("Corchete decla\n");}
-                                | ID {printf("ID EN DECLA DIRECTO\n\n");}
+                                | ID {printf("ID EN DECLA DIRECTO\n\n");aux = getsym($<myStruct>1.valor_string);if(aux){printf("La variable ya se encuentra declarada. Error de doble declaracion.");} else{putsym($<myStruct>1.valor_string,api,valor,NULL);printf("Declarada nueva variables -->%s\n",$<myStruct>1.valor_string);aux = getsym($<myStruct>1.valor_string);printf("\nElemento en AUX %s con valor %i\n",aux->name,aux->valor);}}
 ;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //Empieza sentencia
@@ -274,6 +276,8 @@ sentenciaSalto:                 CONTINUE ';' {printf("UN CONTINUE;\n");}
 ;
 
 %%
+
+symrec* ts;
 
 int main(){
     printf("------------------  Empieza main del BISON  ------------------\n");

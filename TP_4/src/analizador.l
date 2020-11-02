@@ -64,6 +64,7 @@ PARENTESISC \)
 PARENTESISA \(
 MAYOR \>
 MENOR "<"
+COMILLA \"
 
 %%
 {ESPECIFICADORCLASE}    {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return ESPECIFICADORCLASE;}
@@ -97,6 +98,7 @@ MENOR "<"
 {MAYOR} {return MAYOR;}
 {PARENTESISA} {return PARENTESISA;}
 {PARENTESISC} {return PARENTESISC;}
+{COMILLA} {return COMILLA;}
 [\n] {return '\n';}
 "-" {return '-';}
 "." {return '.';}
