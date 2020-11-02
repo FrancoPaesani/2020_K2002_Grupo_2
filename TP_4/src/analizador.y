@@ -8,8 +8,10 @@ int yywrap(){
 	return(1);
 }
 
+int declarando;
 int valor;
 int api;
+char* idDecla;
 symrec* aux;
 %}
 
@@ -70,7 +72,7 @@ struct yylaval_struct{
 %token <myStruct> POR
 %token <myStruct> MENOS
 %token <myStruct> DISTINTO
-%token <myStruct> IGUAL
+%token <puntuacion> IGUAL
 %token <myStruct> MASIGUAL
 %token <especificador> ESPECIFICADORCLASE
 %token <especificador> ESPECIFICADORTIPO
@@ -84,6 +86,7 @@ struct yylaval_struct{
 %token <puntuacion> MAYOR
 %token <puntuacion> MAS
 %token <puntuacion> COMILLA
+%token <puntuacion> PUNTOCOMA
 
 %type <myStruct> expresion
 %type <myStruct> declaracion
@@ -102,11 +105,11 @@ line:     '\n'
 ;
 
 //Empieza expresion
-expresion:                      expresionAsignacion
+expresion:                      expresionAsignacion     {declarando=0}
                                 | expresion ',' expresionAsignacion
 ;
 expresionAsignacion:            expresionCondicional
-                                | expresionUnaria operAsignacion expresionAsignacion
+                                | expresionUnaria operAsignacion expresionAsignacion {if(declarando==1){printf("Lo que declaro es --> %s\n",$<myStruct>1.valor_string);}}
                                 | /*vacio*/
 ;
 expresionCondicional:           expresionOLogico
@@ -117,7 +120,7 @@ expresionConstante:             expresionCondicional
                                 | /*    vacio   */
 ;
 expresionOLogico:               expresionYLogico
-                                | expresionOLogico '|''|' expresionYLogico
+                                | expresionOLogico '|' '|' expresionYLogico
 ;
 expresionYLogico:               expresionOInclusivo
                                 | expresionYLogico AND AND expresionOInclusivo              
@@ -173,7 +176,7 @@ expresionSufijo:                expresionPrimaria
                                 | expresionSufijo MENOS MENOS
 ;
 expresionPrimaria:              ID
-                                | NUM   {valor = $<myStruct>1.valor_entero;}
+                                | NUM   {printf("VALOR A GUARDAR %i",$<myStruct>1.valor_entero);valor = $<myStruct>1.valor_entero; if(declarando==1){putsym(idDecla,api,valor,NULL);aux = getsym(idDecla);printf("\nSe guardo bien el id --> %s de valor %i\n",aux->name,aux->valor);}}
                            //     |  constante 
                                 | COMILLA ID COMILLA
                                 | PARENTESISA expresion PARENTESISC
@@ -198,7 +201,9 @@ declaracion:                    especificadoresDeclaracion listaDeclaradores    
 especificadoresDeclaracion:     especificadorAlmacenamiento especificadoresDeclaracion
                                 | especificadorTipo especificadoresDeclaracion
                                 | calificadorTipo especificadoresDeclaracion
-                                | /* vacio */
+                                | especificadorAlmacenamiento
+                                | especificadorTipo 
+                                | calificadorTipo
 ;
 especificadorAlmacenamiento:    ESPECIFICADORCLASE
 ;
@@ -211,9 +216,9 @@ listaDeclaradores:              declarador
                                 | /* vacio */
 ;
 declarador:                     decla 
-                                | decla IGUAL inicializador {valor = $<myStruct>3.valor_entero;} //analizar si existe inicializador en caso de ser ID
+                                | decla IGUAL inicializador
 ;
-inicializador:                  expresionAsignacion
+inicializador:                  expresionAsignacion {declarando=1;}
                                 | '{' listaInicializadores ',' '}'
 ;
 listaInicializadores:           inicializador
@@ -230,9 +235,9 @@ listaCalificadoresTipo:         calificadorTipo
 decla:                          puntero declaradorDirecto
                                 | declaradorDirecto
 ;
-declaradorDirecto:              PARENTESISA decla PARENTESISC {printf("parentesis DECLA\n");}
-                                | declaradorDirecto CORCHETEA expresionConstante CORCHETEC {printf("Corchete decla\n");}
-                                | ID {printf("ID EN DECLA DIRECTO\n\n");aux = getsym($<myStruct>1.valor_string);if(aux){printf("La variable ya se encuentra declarada. Error de doble declaracion.");} else{putsym($<myStruct>1.valor_string,api,valor,NULL);printf("Declarada nueva variables -->%s\n",$<myStruct>1.valor_string);aux = getsym($<myStruct>1.valor_string);printf("\nElemento en AUX %s con valor %i\n",aux->name,aux->valor);}}
+declaradorDirecto:              PARENTESISA decla PARENTESISC
+                                | declaradorDirecto CORCHETEA expresionConstante CORCHETEC 
+                                | ID {declarando=1;idDecla = malloc(strlen($<myStruct>1.valor_string))+1;strcpy(idDecla,$<myStruct>1.valor_string);printf("ID EN DECLA DIRECTO\n\n");aux = getsym(idDecla);if(aux){printf("La variable ya se encuentra declarada. Error de doble declaracion.");} else{printf("Declarada nueva variable -->%s\n",idDecla);}}
 ;
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //Empieza sentencia
@@ -243,8 +248,8 @@ sentencia:                      sentenciaExp
                                 | sentenciaEtiq
                                 | sentenciaSalto
 ;
-sentenciaExp:                   expresion ';'
-                                ';'
+sentenciaExp:                   expresion PUNTOCOMA
+                                | PUNTOCOMA
 ;
 sentenciaComp:                  '{' listaDeclaraciones listaSentencias '}'
 ;
@@ -262,19 +267,20 @@ sentenciaSel:                   IF PARENTESISA expresion PARENTESISC sentencia
                                 | SWITCH PARENTESISA expresion PARENTESISC sentencia
 ;
 sentenciaIt:                    WHILE PARENTESISA expresion PARENTESISC sentencia
-                                | DO sentencia WHILE PARENTESISA expresion PARENTESISC ';'
-                                | FOR PARENTESISA expresion ';' expresion ';' expresion PARENTESISC sentencia
+                                | DO sentencia WHILE PARENTESISA expresion PARENTESISC PUNTOCOMA
+                                | FOR PARENTESISA expresion PUNTOCOMA expresion PUNTOCOMA expresion PARENTESISC sentencia
 ;
 sentenciaEtiq:                  CASE expresion ':' sentencia
                                 | DEFAULT ':' sentencia
                                 | ID ':' sentencia
 ;
-sentenciaSalto:                 CONTINUE ';' {printf("UN CONTINUE;\n");}
-                                | BREAK ';'     {printf("Encontre un break brrr;\n");}
-                                | RETURN expresion ';'
-                                | GOTO ID ';'
+sentenciaSalto:                 CONTINUE PUNTOCOMA {printf("UN CONTINUE;\n");}
+                                | BREAK PUNTOCOMA     {printf("Encontre un break brrr;\n");}
+                                | RETURN expresion PUNTOCOMA
+                                | GOTO ID PUNTOCOMA
 ;
-
+//exit:                           PUNTOCOMA "exit" //muestro tabla y termino programa
+//;
 %%
 
 symrec* ts;

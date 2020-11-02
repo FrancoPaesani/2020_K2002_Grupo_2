@@ -65,6 +65,7 @@ PARENTESISA \(
 MAYOR \>
 MENOR "<"
 COMILLA \"
+PUNTOCOMA \;
 
 %%
 {ESPECIFICADORCLASE}    {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return ESPECIFICADORCLASE;}
@@ -99,18 +100,19 @@ COMILLA \"
 {PARENTESISA} {return PARENTESISA;}
 {PARENTESISC} {return PARENTESISC;}
 {COMILLA} {return COMILLA;}
+{PUNTOCOMA} {return PUNTOCOMA;}
 [\n] {return '\n';}
 "-" {return '-';}
 "." {return '.';}
 "," {return ',';}
 ":" {return ':';}
 "!" {return '!';}
+"|" {return '|';}
 "[" {return CORCHETEA;}
 "]" {return CORCHETEC;}
 "{" {return '{';}
 "}" {return '}';}
 "*" {return '*';}
-";" {return ';';}
 "//"[^\n]* {printf("Encontre una linea de comentarios: %s\n",yytext);}
 [1-9]{DIGITO_DECIMAL}*/[^a-zA-Z] {yylval.myStruct.valor_entero = atoi(yytext);return NUM;}
 0{DIGITO_OCTAL}*/[^a-zA-Z] {yylval.myStruct.valor_entero = atoi(yytext);return NUM;}
