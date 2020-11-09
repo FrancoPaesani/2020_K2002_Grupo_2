@@ -55,7 +55,10 @@ DISTINTO \!
 IGUAL \=
 MASIGUAL \+\=
 ESPECIFICADORCLASE typedef|static|auto|register|extern
-ESPECIFICADORTIPO void|char|short|int|long|float|double|signed|unsigned
+ESPECIFICADORTIPOENTERO short|int|long|double|signed|unsigned
+ESPECIFICADORTIPOFLOAT float 
+ESPECIFICADORTIPOCADENA char
+ESPECIFICADORTIPOVACIO void
 CALIFICADORTIPO const|volatile
 ESPSTRUCTUNION struct|union
 CORCHETEC "["
@@ -69,9 +72,12 @@ PUNTOCOMA \;
 
 %%
 {ESPECIFICADORCLASE}    {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return ESPECIFICADORCLASE;}
-{ESPECIFICADORTIPO}     {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return ESPECIFICADORTIPO;}
+{ESPECIFICADORTIPOENTERO}     {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);yylval.myStruct.tipo = 1; return ESPECIFICADORTIPOENTERO;}
+{ESPECIFICADORTIPOFLOAT}	  {yylval.myStruct.tipo = 1;return ESPECIFICADORTIPOFLOAT;}
+{ESPECIFICADORTIPOCADENA}	  {yylval.myStruct.tipo = 2;return ESPECIFICADORTIPOCADENA;}
+{ESPECIFICADORTIPOVACIO}	  {yylval.myStruct.tipo = 0;return ESPECIFICADORTIPOVACIO;}
 {CALIFICADORTIPO}       {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return CALIFICADORTIPO;}
-{ESPSTRUCTUNION}        {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return ESPSTRUCTUNION;}
+{ESPSTRUCTUNION}        {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);yylval.myStruct.tipo = 3; return ESPSTRUCTUNION;}
 "sizeof"                {return SIZEOF;}
 "break"                 {return BREAK;}  
 "case"                  {return CASE;}  
@@ -87,7 +93,7 @@ PUNTOCOMA \;
 "return"                {return RETURN;}
 "switch"                {return SWITCH;}
 "while"                 {printf("UNWHILE FLEX\n");return WHILE;}
-[a-zA-Z_][a-zA-Z0-9_]* {yylval.myStruct.valor_string = malloc(sizeof(yytext));strcpy(yylval.myStruct.valor_string,yytext);return ID;}
+[a-zA-Z_][a-zA-Z0-9_]* {yylval.myStruct.valor_string = malloc(sizeof(yytext));strcpy(yylval.myStruct.valor_string,yytext); yylval.myStruct.tipo = 4; return ID;}
 {AND} {return AND;}
 {POR} {return POR;}
 {MAS} {return MAS;}
@@ -114,9 +120,9 @@ PUNTOCOMA \;
 "}" {return '}';}
 "*" {return '*';}
 "//"[^\n]* {printf("Encontre una linea de comentarios: %s\n",yytext);}
-[1-9]{DIGITO_DECIMAL}*/[^a-zA-Z] {yylval.myStruct.valor_entero = atoi(yytext);return NUM;}
+[1-9]{DIGITO_DECIMAL}*/[^a-zA-Z] {yylval.myStruct.valor_entero = atoi(yytext); yylval.myStruct.tipo = 1; return NUM;}
 0{DIGITO_OCTAL}*/[^a-zA-Z] {yylval.myStruct.valor_entero = atoi(yytext);return NUM;}
 0[xX]{DIGITO_HEXADECIMAL}+/[^a-zA-Z] {return NUM;}
-{DIGITO_DECIMAL}*\.{DIGITO_DECIMAL}+([Ee](\+|\-)?{DIGITO_DECIMAL}*)?/[^a-zA-Z] {return NUM;}
+{DIGITO_DECIMAL}*\.{DIGITO_DECIMAL}+([Ee](\+|\-)?{DIGITO_DECIMAL}*)?/[^a-zA-Z] {yylval.myStruct.valor_entero = atof(yytext); yylval.myStruct.tipo = 1; return NUM;}
 [.]* {printf("Caracter no reconocido %s.\n",yytext);return NO_RECONOCIDO;}
 %%

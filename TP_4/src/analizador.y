@@ -3,6 +3,7 @@
   #include <string.h>
   #include "utiles.h"
 
+
 int yylex();
 int yywrap(){
 	return(1);
@@ -25,7 +26,8 @@ struct yylaval_struct{
         char* especificador;
         char* puntuacion;
         int entero;
-        int valor_entero;
+        float valor_entero;
+        int tipo;
         //struct symrec *sval;
 }myStruct;
 
@@ -76,6 +78,10 @@ struct yylaval_struct{
 %token <myStruct> MASIGUAL
 %token <especificador> ESPECIFICADORCLASE
 %token <especificador> ESPECIFICADORTIPO
+%token <myStruct> ESPECIFICADORTIPOVACIO
+%token <myStruct> ESPECIFICADORTIPOCADENA
+%token <myStruct> ESPECIFICADORTIPOFLOAT
+%token <myStruct> ESPECIFICADORTIPOENTERO
 %token <especificador> CALIFICADORTIPO
 %token <especificador> ESPSTRUCTUNION
 %token <puntuacion> CORCHETEA
@@ -84,7 +90,7 @@ struct yylaval_struct{
 %token <puntuacion> PARENTESISC
 %token <puntuacion> MENOR
 %token <puntuacion> MAYOR
-%token <puntuacion> MAS
+%token <myStruct> MAS
 %token <puntuacion> COMILLA
 %token <puntuacion> PUNTOCOMA
 
@@ -149,7 +155,7 @@ expresionCorrimiento:           expresionAditiva
                                 | expresionCorrimiento MAYOR MAYOR expresionAditiva
 ;
 expresionAditiva:               expresionMultiplicativa
-                                | expresionAditiva MAS expresionMultiplicativa
+                                | expresionAditiva MAS expresionMultiplicativa { if ($<myStruct.tipo>1==$<myStruct.tipo>3){$<myStruct.valor_entero>$ = $<myStruct.valor_entero>1 + $<myStruct.valor_entero>3; $<myStruct.tipo>$ = $<myStruct.tipo>1;}else{printf("Error de tipos");}}
                                 | expresionAditiva MENOS expresionMultiplicativa
 ;
 expresionMultiplicativa:        expresionConversion
@@ -287,6 +293,6 @@ symrec* ts;
 
 int main(){
     printf("------------------  Empieza main del BISON  ------------------\n");
-    saludar();
+    
     yyparse();
 }
