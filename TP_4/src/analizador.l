@@ -77,7 +77,7 @@ PUNTOCOMA \;
 {ESPECIFICADORTIPOCADENA}	  {yylval.myStruct.tipo = 2;return ESPECIFICADORTIPOCADENA;}
 {ESPECIFICADORTIPOVACIO}	  {yylval.myStruct.tipo = 0;return ESPECIFICADORTIPOVACIO;}
 {CALIFICADORTIPO}       {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);return CALIFICADORTIPO;}
-{ESPECIFICADORTIPOSTRUCT}        {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);yylval.myStruct.tipo = 3; return ESPECIFICADORTIPOSTRUCT;}
+{ESPSTRUCTUNION}        {yylval.myStruct.especificador = malloc(sizeof(yytext));strcpy(yylval.myStruct.especificador,yytext);yylval.myStruct.tipo = 3; return ESPSTRUCTUNION;}
 "sizeof"                {return SIZEOF;}
 "break"                 {return BREAK;}  
 "case"                  {return CASE;}  
@@ -120,8 +120,8 @@ PUNTOCOMA \;
 "}" {return '}';}
 "*" {return '*';}
 "//"[^\n]* {printf("Encontre una linea de comentarios: %s\n",yytext);}
-[1-9]{DIGITO_DECIMAL}*/[^a-zA-Z] {yylval.myStruct.valor_entero = atoi(yytext); yylval.myStruct.tipo = 1; return CONSTANTE;}
-0{DIGITO_OCTAL}*/[^a-zA-Z] {yylval.myStruct.valor_entero = atoi(yytext);return REAL;}
+[1-9]{DIGITO_DECIMAL}*/[^a-zA-Z] {yylval.myStruct.valor_entero = atoi(yytext); yylval.myStruct.tipo = 1; return NUM;}
+0{DIGITO_OCTAL}*/[^a-zA-Z] {yylval.myStruct.valor_entero = atoi(yytext);return NUM;}
 0[xX]{DIGITO_HEXADECIMAL}+/[^a-zA-Z] {return NUM;}
 {DIGITO_DECIMAL}*\.{DIGITO_DECIMAL}+([Ee](\+|\-)?{DIGITO_DECIMAL}*)?/[^a-zA-Z] {yylval.myStruct.valor_entero = atof(yytext); yylval.myStruct.tipo = 1; return NUM;}
 [.]* {printf("Caracter no reconocido %s.\n",yytext);return NO_RECONOCIDO;}
