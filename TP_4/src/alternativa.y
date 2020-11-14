@@ -23,8 +23,9 @@ symrec* aux;
 struct yylaval_struct{
     int tipo;
     float valor;
-  	char id[85];
+  	char id[58];
   	char cadena[85];    
+	char* valor_string;
 }myStruct;
 
 }
@@ -44,7 +45,33 @@ struct yylaval_struct{
 %token <myStruct> ESPECIFICADORTIPOCADENA 
 %token <myStruct> ESPECIFICADORTIPOREAL 
 %token <myStruct> ESPECIFICADORTIPOSTRUCT
+%token <myStruct> ESPECIFICADORTIPOFLOAT
 %token <myStruct> CARACTER
+%token <myStruct> PRODUCTO
+%token <myStruct> SIZEOF
+%token <myStruct> BREAK
+%token <myStruct> CASE
+%token <myStruct> CONTINUE
+%token <myStruct> DEFAULT
+%token <myStruct> DO
+%token <myStruct> DOUBLE
+%token <myStruct> ELSE
+%token <myStruct> ENUM
+%token <myStruct> RETURN
+%token <myStruct> NO_RECONOCIDO
+%token <myStruct> COMILLA
+%token <myStruct> MAYOR
+%token <myStruct> MENOR
+%token <myStruct> MASIGUAL
+%token <myStruct> IGUAL
+%token <myStruct> DISTINTO
+%token <myStruct> AND
+%token <myStruct> ID
+%token <myStruct> WHILE
+%token <myStruct> SWITCH
+%token <myStruct> FOR
+%token <myStruct> GOTO
+%token <myStruct> IF
 
 %type <myStruct> listaDeSentencias 
 %type <myStruct> sentencia 
@@ -59,7 +86,7 @@ struct yylaval_struct{
 %type <myStruct> tipoID
 %type <myStruct> especificadorTipo 
 %type <myStruct> structOUnion 
-%type <myStruct> expStruct 
+%type <myStruct> expresionStruct 
 %type <myStruct> declarador 
 %type <myStruct> estadoCompuesto
 %type <myStruct> estadoVacio
@@ -75,16 +102,17 @@ input:    /* vacio */
 ;
 
 line:     '\n'
-        | listaDeSentencias sentencia
-        | sentencia {printf("entramos a una sentencia\n");}
+        | listaDeSentencias
+        | sentencia
+		//| expresionPrimariaA
 ;
 
 listaDeSentencias: listaDeSentencias sentencia 
-            | sentencia
+           			 | sentencia
 ;
 
-sentencia: funcion 
-            | declaracion
+sentencia: 			declaracion
+				//	| funcion 	// no puede hacer prediccion
 ;
 
 funcion: 		tipoID IDENTIFICADOR '(' listaParametros ')' estadoCompuesto ';' {}
@@ -110,23 +138,32 @@ declaraciones:	declaraciones declaracion
             | declaracion
 ;
 
-declaracion:		especificadorTipo ';' 
-			| especificadorTipo declarador ';' {}
-			| especificadorTipo declarador ASIGNACION expresion ';' {}
+declaracion:	especificadorTipo ';' 
+				| especificadorTipo declarador ';' {}
+				| especificadorTipo declarador ASIGNACION expresion ';' {if(getsym($<myStruct>2.valor_string) == 0){
+																	if($<myStruct>1.tipo == $<myStruct>4.tipo )
+																	{printf("La variable no se encuentra declarada.\n");
+																	putsym($<myStruct>2.valor_string,$<myStruct>1.tipo,$<myStruct>4.valor,$<myStruct>4.valor_string);
+																	}
+																	else{printf("HAY UN ERROR DE TIPO DE DATO.\n");}}
+																	else{printf("HAY UN ERROR DE DOBLE DECLARACION.\n");}
+																	symrec* aux = getsym($<myStruct>2.valor_string);
+																	printf("La variable %s se guardo con valor -->%f.\n",aux->name,aux->valor);
+																	}
 ;
 
 expresionVacio:	/* VACIO */
 			| expresion {printf("\n expresion goes brrr\n");}
 ;
 
-expresion:      expresion MAS expresionPrimariaA {if($<myStruct>1.tipo==$<myStruct>3.tipo){$<myStruct>$.valor_entero = $<myStruct>1.valor_entero + $<myStruct>3.valor_entero; $<myStruct>$.tipo = $<myStruct>1.tipo;}else{printf("Error de tipos");}}
+expresion:      expresion MAS expresionPrimariaA {if($<myStruct>1.tipo==$<myStruct>3.tipo){$<myStruct>$.valor = $<myStruct>1.valor + $<myStruct>3.valor; $<myStruct>$.tipo = $<myStruct>1.tipo;}else{printf("Error de tipos");}}
 			|expresion MENOS expresionPrimariaA {} 
-			|expresionPrimariaA {$$ = $1;}
+			|expresionPrimariaA {}
 ;
 			
-expresionPrimariaA:     expresionPrimariaB {$$ = $1;} |
-			expresionPrimariaA POR expresionPrimariaB {}
-			expresionPrimariaA DIVISION expresionPrimariaB {}
+expresionPrimariaA:     expresionPrimariaB {} 
+			| expresionPrimariaA POR expresionPrimariaB {if($<myStruct>1.tipo==$<myStruct>3.tipo){$<myStruct>$.valor = $<myStruct>1.valor * $<myStruct>3.valor; $<myStruct>$.tipo = $<myStruct>1.tipo;}else{printf("Error de tipos");}}
+			| expresionPrimariaA DIVISION expresionPrimariaB {if($<myStruct>1.tipo==$<myStruct>3.tipo){$<myStruct>$.valor = $<myStruct>1.valor / $<myStruct>3.valor; $<myStruct>$.tipo = $<myStruct>1.tipo;}else{printf("Error de tipos");}}
 			;
 
 expresionPrimariaB:     declarador {$$ = $1;} 
@@ -145,18 +182,18 @@ especificadorTipo:	tipoID
 			| declarador 
 ;
 
-tipoID:			ESPECIFICADORTIPOENTERO {$$ = $1;}
+tipoID:		ESPECIFICADORTIPOENTERO {$$ = $1;}
 			|ESPECIFICADORTIPOCADENA {$$ = $1;}
 			|ESPECIFICADORTIPOREAL {$$ = $1;}
 			|ESPECIFICADORTIPOVACIO {$$ = $1;}
 
-structOUnion:		ESPECIFICADORTIPOSTRUCT IDENTIFICADOR '{' expStruct '}' {}
-			| ESPECIFICADORTIPOSTRUCT '{' expStruct '}'
+structOUnion:		ESPECIFICADORTIPOSTRUCT IDENTIFICADOR '{' expresionStruct '}' {}
+			| ESPECIFICADORTIPOSTRUCT '{' expresionStruct '}'
 			| ESPECIFICADORTIPOSTRUCT IDENTIFICADOR {}
 ;
 
-expStruct:	    expStruct idStruct 
-			| idStruct
+expresionStruct:	    expresionStruct idStruct 
+						| idStruct
 ;
 
 declarador:		IDENTIFICADOR {$$ = $1;}
@@ -177,6 +214,5 @@ symrec* ts;
 
 int main(){
     printf("------------------  Empieza main del BISON  ------------------\n");
-    
     yyparse();
 }
