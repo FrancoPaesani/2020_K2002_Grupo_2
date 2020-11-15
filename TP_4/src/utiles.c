@@ -9,7 +9,7 @@ symrec *putsym(char const *sym_name, enum API sym_type, int newValue, char* newS
   ptr->name = (char *) malloc (strlen (sym_name) + 1);
   strcpy (ptr->name,sym_name);
   ptr->types = sym_type;
-  if(sym_type == VAR){
+  if(sym_type == ENTERO){
   ptr->valor = newValue;
   ptr->next = (struct symrec *)ts;
   ts = ptr;
