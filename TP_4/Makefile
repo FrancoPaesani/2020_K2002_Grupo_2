@@ -37,7 +37,8 @@ all: clean $(TARGETS)
 .PHONY: clean debug
 
 clean:
-	if exist "./obj/" (rd obj /s /q) & if exist "./-p/" (rd -p /s /q)
+	rm -f $(ODIR)/*
+	rm -f *.$(FILE_EXT)
 
 clear:
 	cls
