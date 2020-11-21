@@ -4,6 +4,9 @@
 	#include <string.h>
     #include "alternativa.tab.h"
     #include "utiles.h"
+  //  #define YY_DECL extern "C" int yylex()
+
+        int linea = 1;
 %}
 
 SECUENCIA_ESCAPE_SIMPLE [\' | \" | \? | \\ | a | b | f | n | r | t | v]
@@ -59,7 +62,7 @@ ASIGNACION \=
 {MAYOR} {return MAYOR;}
 {COMILLA} {return COMILLA;}
 ";" {return ';';}
-[\n] {return '\n';}
+"\n" {linea++; return'\n';}
 "." {return '.';}
 "," {return ',';}
 ":" {return ':';}

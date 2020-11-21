@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-enum API{VACIO,ENTERO,STRING,UNCHAR};
+enum API{VACIO,ENTERO,STRING,UNCHAR,FUNCION};
 
 void* saludar();
 
@@ -12,6 +12,7 @@ typedef struct symrec
   enum API types; //Va a ser un enum con los tipos de datos
   float valor;
   char* cadena;
+  char* parametros;
   struct symrec *next;
 } symrec;
 

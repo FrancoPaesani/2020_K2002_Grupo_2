@@ -9,6 +9,10 @@ int yylex();
 int yywrap(){
 	return(1);
 }
+void yyerror(char *string);
+
+extern FILE* yyin;
+extern int linea;
 
 int declarando;
 int valor;
@@ -94,7 +98,7 @@ struct yylaval_struct{
 %left  '-'  '+'
 %left  '*'  '/'
 
-
+%start input
 %%
 
 input:    /* vacio */
@@ -103,7 +107,8 @@ input:    /* vacio */
 
 line:     '\n'
         | listaDeSentencias
-        | sentencia
+   //     | sentencia
+	//	| funcion
 		//| expresionPrimariaA
 ;
 
@@ -149,7 +154,7 @@ declaracion:	especificadorTipo ';'
 																	else{printf("HAY UN ERROR DE DOBLE DECLARACION.\n");}
 																	symrec* aux = getsym($<myStruct>2.valor_string);
 																	printf("La variable %s se guardo con valor -->%f.\n",aux->name,aux->valor);
-																	}
+																		}
 ;
 
 expresionVacio:	/* VACIO */
@@ -212,7 +217,16 @@ estadoVacio:		/* VACIO */
 
 symrec* ts;
 
+void yyerror(char *string){
+	printf("%s --> El error aparecio en la linea: %d.\n", string, linea);
+};
+
 int main(){
-    printf("------------------  Empieza main del BISON  ------------------\n");
+
+	printf("------------------  Empieza main del BISON  ------------------\n");
+	yyin = fopen("programa.txt","r+");
+	if(yyin == NULL){
+		puts(strerror(errno));
+	}
     yyparse();
 }
