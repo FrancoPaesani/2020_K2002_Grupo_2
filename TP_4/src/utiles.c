@@ -70,7 +70,7 @@ void* leerTS(){
 void* informeTS(){      //    recorro la lista tantas veces como tipos de datos tengo. Ineficiente pero queda mas lindo en consola y facil de implementar.
   symrec *ptr;
 
-  for(enum API i = VACIO; i<FUNCION+1; i++){
+  for(enum API i = ENTERO; i<FUNCION+1; i++){
     char* tipo = malloc(10); tipo = convertirApiAChar(i);
   printf("%%%%%%%%        Empieza registro de %s         %%%%%%%%\n",tipo);
     for (ptr = ts; ptr != (symrec *) 0; ptr = (symrec *)ptr->next){
