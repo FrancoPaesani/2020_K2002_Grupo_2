@@ -122,11 +122,12 @@ struct yylaval_struct{
 %%
 
 
-programa: listaDeSentencias '\n' END {printf("Termino sin errores.\n");}
-			| listaDeSentencias END {printf("Termino sin errores.\n");}
+programa: listaDeSentencias '\n' END {printf("Termino sin errores.\n");leerTS();}
+			| listaDeSentencias END {printf("Termino sin errores.\n");leerTS();}
 ;
 
-listaDeSentencias: sentencia otraCosa	
+listaDeSentencias: sentencia otraCosa
+						| error ';' listaDeSentencias {}	// sigue analizando desde el ;
 ;
 otraCosa: listaDeSentencias | /*VACIO*/
 ;
