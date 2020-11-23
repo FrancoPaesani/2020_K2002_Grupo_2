@@ -13,6 +13,7 @@ void yyerror(char *string);
 void* string_append(char* s1, int type);	// 0 uso parametrosUso. 1 uso parametrosDecla
 char** _string_split(char* text, char* separator, int(*condition)(char*, int));
 char **string_split(char *text, char *separator);
+void* _string_append(char* original, char* append);
 
 extern FILE* yyin;
 extern int linea;
@@ -121,7 +122,8 @@ struct yylaval_struct{
 %%
 
 
-programa: listaDeSentencias '\n' END 
+programa: listaDeSentencias '\n' END {printf("Termino sin errores.\n");}
+			| listaDeSentencias END {printf("Termino sin errores.\n");}
 ;
 
 listaDeSentencias: sentencia otraCosa	
@@ -129,15 +131,20 @@ listaDeSentencias: sentencia otraCosa
 otraCosa: listaDeSentencias | /*VACIO*/
 ;
 
-sentencia: 			declaracion
+sentencia: 			declaracion 
 					| expresionVacio
 					| estado
 					| funcionUso
 					| funcion
+					| declaracion '\n'
+					| expresionVacio '\n'
+					| estado '\n'
+					| funcionUso '\n'
+					| funcion '\n'
 ;
 funcion: 		especificadorTipo IDENTIFICADOR '(' listaParametros ')' '{' sentencia  '}' ';' {symrec* auxFunc = getsym($<myStruct>2.valor_string);
-																								if(aux){
-																							printf("Error semantico. La declaracion de la funcion ya se realizo. Se puede hacer uso de la funcion.\n");
+																								if(aux){yyerror("Error semantico. La declaracion de la funcion ya se realizo. Se puede hacer uso de la funcion.\n");
+																							//printf("Error semantico. La declaracion de la funcion ya se realizo. Se puede hacer uso de la funcion.\n");
 																							}
 																							else{
 																								symrec* auxf = putsym($<myStruct>2.valor_string,FUNCION,cantidadParametros,NULL,parametrosDecla);
@@ -157,16 +164,19 @@ funcionUso: 	 IDENTIFICADOR '(' listaEntrada ')' ';' {symrec* aux = getsym($<myS
 														if(auxParam){
 															if(auxParam->types == tipoDeclarado){}
 															else{
-																printf("Error semantico. El tipo de dato ingresado no matchea con el de la funcion.\n");
+																//yyerror("Error semantico. El tipo de dato ingresado no matchea con el de la funcion.\n");
+																printf("Error semantico en la linea %i. El tipo de dato ingresado no matchea con el de la funcion.\n",linea);
 																break;
 															}
 														}else{
-															printf("Error semantico. El parametro numero %i ingresado en la funcion no existe\n",i);
+															//yyerror("Error semantico. El parametro ingresado en la funcion no existe\n");
+															printf("Error semantico en la linea %i. El parametro numero %i ingresado en la funcion no existe\n",linea,i);
 															break;
 														}				
 														}
 														}else{
-															printf("Error semantico. La funcion <%s> invocada no se declaro.\n",$<myStruct>1.valor_string);
+															//yyerror("Error semantico. La funcion invocada no se declaro.\n");
+															printf("Error semantico en la linea %i. La funcion <%s> invocada no se declaro.\n",linea,$<myStruct>1.valor_string);
 														}
 														free(parametrosUso);free(parametrosDecla);cantidadParametros = 0;
 														}
@@ -222,8 +232,6 @@ declaracion:	especificadorTipo ';'
 																	}
 																	else{printf("HAY UN ERROR DE TIPO DE DATO.\n");}}
 																	else{printf("HAY UN ERROR DE DOBLE DECLARACION.\n");}
-																	symrec* aux = getsym($<myStruct>2.valor_string);
-																	printf("La variable %s se guardo con valor -->%f.\n",aux->name,aux->valor);
 																	}
 ;
 
@@ -351,6 +359,11 @@ void* string_append(char* s1, int type){
 	strcat(&parametrosDecla,s1);
 	strcat(&parametrosDecla,",");
 	}
+}
+
+void* _string_append(char* original, char* append){							//global
+	realloc(original, strlen(original) + strlen(append) + 1);
+	strcat(&original,append);
 }
 
 char **string_split(char *text, char *separator) {
