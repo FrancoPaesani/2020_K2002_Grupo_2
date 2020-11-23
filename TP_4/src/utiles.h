@@ -13,10 +13,11 @@ typedef struct symrec
   float valor;
   char* cadena;
   char* parametros;
+  int cantidadParametros;
   struct symrec *next;
 } symrec;
 
 extern symrec *ts;
 
-symrec *putsym(char const*, enum API, int, char*);
+symrec *putsym(char const*, enum API, int, char*, char*);
 symrec *getsym(char const*);
