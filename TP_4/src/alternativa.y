@@ -121,8 +121,8 @@ struct yylaval_struct{
 %%
 
 
-programa: listaDeSentencias '\n' END {printf("Termino sin errores sintacticos. Revisar el informa de consola por errrores semanticos\n");informeTS();}
-			| listaDeSentencias END {printf("Termino sin errores sintactico. Revisar el informe de consola por errores semanticos.\n");informeTS();}
+programa: listaDeSentencias '\n' END {printf("FIN ERRORES SEMANTICOS\n\n");printf("Termino sin errores sintacticos. Revisar el informa de consola por errrores semanticos\n\nComienza informacion de la Tabla de simbolos:\n\n");informeTS();}
+			| listaDeSentencias END {printf("FIN ERRORES SEMANTICOS\n\n");printf("Termino sin errores sintactico. Revisar el informe de consola por errores semanticos.\n\nComienza informacion de la Tabla de simbolos:\n\n");informeTS();}
 ;
 
 listaDeSentencias: sentencia otraCosa
@@ -149,23 +149,35 @@ funcion: 		especificadorTipo IDENTIFICADOR '(' listaParametros ')' '{' sentencia
 																							else{
 																								symrec* auxf = putsym($<myStruct>2.valor_string,FUNCION,cantidadParametros,NULL,parametrosDecla);
 																							}
-																							cantidadParametros = 0;}
+																							cantidadParametros = 0;
+																							int j =0;while(parametrosDecla[j]!=NULL){parametrosDecla[j] = NULL;j++;}}
 ;
 
 funcionUso: 	 IDENTIFICADOR '(' listaEntrada ')' ';' {symrec* aux = getsym($<myStruct>1.valor_string);
 														if(aux){
-														char** separado_decla = string_split(aux->parametros,",");
-														char** separado_llamada = string_split(parametrosUso,","); 
-														
+														char** separado_decla = string_split(aux->parametros,",");int j=0;
+														char** separado_llamada = string_split(parametrosUso,",");
+
+														if(cantidadParametros == aux->cantidadParametros){
 														for(int i = 0; i<aux->cantidadParametros; i++){
-														int tipoDeclarado = parametrosDecla[i] - '0';
-														//printf("Primer lugar ---> %s de tipo -->%i.\n",separado_llamada[i],tipoDeclarado);
 														symrec* auxParam = getsym(separado_llamada[i]);
+
 														if(auxParam){
-															if(auxParam->types == tipoDeclarado){}
+															/*if(auxParam->types == (int) separado_decla[i]){}
 															else{
 																//yyerror("Error semantico. El tipo de dato ingresado no matchea con el de la funcion.\n");
 																printf("Error semantico en la linea %i. El tipo de dato ingresado no matchea con el de la funcion.\n",linea);
+																//printf("Tipo uso %i y tipo declarado %i. Char declarado --> %s\n",auxParam->types,tipoDeclarado,parametrosDecla[i]);
+																break;
+															}*/
+															if(auxParam->types == 1 && strcmp(separado_decla[i],"1")==0){}
+															else if(auxParam->types == 2 && strcmp(separado_decla[i],"2")){}
+															else if(auxParam->types == 3 && strcmp(separado_decla[i],"3")){}
+															else if(auxParam->types == 4 && strcmp(separado_decla[i],"4")){}
+															else{
+																//yyerror("Error semantico. El tipo de dato ingresado no matchea con el de la funcion.\n");
+																printf("Error semantico en la linea %i. El tipo de dato ingresado no matchea con el de la funcion.\n",linea);
+																//printf("Tipo uso %i y tipo declarado %i. Char declarado --> %s\n",auxParam->types,tipoDeclarado,parametrosDecla[i]);
 																break;
 															}
 														}else{
@@ -173,12 +185,15 @@ funcionUso: 	 IDENTIFICADOR '(' listaEntrada ')' ';' {symrec* aux = getsym($<myS
 															printf("Error semantico en la linea %i. El parametro numero %i ingresado en la funcion no existe\n",linea,i);
 															break;
 														}				
+														}}else{
+															printf("Error semantico en la linea %i. En la invocacion de la funcion <%s> se usaron distinta cantidad de parametros.\n",linea,$<myStruct>1.valor_string);
 														}
 														}else{
 															//yyerror("Error semantico. La funcion invocada no se declaro.\n");
 															printf("Error semantico en la linea %i. La funcion <%s> invocada no se declaro.\n",linea,$<myStruct>1.valor_string);
 														}
 														free(parametrosUso);free(parametrosDecla);cantidadParametros = 0;
+														int j =0;while(parametrosUso[j]!=NULL){parametrosUso[j] = NULL;j++;}
 														}
 ;				
 listaEntrada:/*VACIO*/ 
@@ -344,6 +359,8 @@ int main(){
     yyparse();
 	
 	fclose(yyin);
+
+	printf("------------------  Fin de BISON  ------------------\n\n");
 
 	return 0;
 }
