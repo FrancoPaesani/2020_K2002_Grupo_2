@@ -4,6 +4,7 @@
 	#include <string.h>
     #include "alternativa.tab.h"
     #include "utiles.h"
+    //#define yyterminate() return token::END 
   //  #define YY_DECL extern "C" int yylex()
 
         int linea = 1;
@@ -19,7 +20,7 @@ CONSTANTE_CARACTER ([^\'\\]|\\({SECUENCIA_ESCAPE_SIMPLE}|{ESCAPE_OCTAL}|{ESCAPE_
 CARACTER_PUNTUACION [(\[\]\(\)\{\}\.]|\-\>|\+\+|\-\-|[\&\*\+\-\~\!\/\%]|\<\<|\>\>|[\<\>]|\<\=|\>\=|\=\=|\!\=|^|\||\&\&|\|\||\=|\*\=|\/\=|\%\=|\+\=|\-\=|\<\<\=|\>\>\=|\&\=|\^\=|\|\=|\;        
 ESPECIFICADORTIPOENTERO short|int|long|double|signed|unsigned
 ESPECIFICADORTIPOFLOAT float 
-ESPECIFICADORTIPOCADENA char
+ESPECIFICADORTIPOCADENA char|char\*
 ESPECIFICADORTIPOVACIO void
 ESPECIFICADORTIPOSTRUCT struct|union
 DISTINTO \!\=
@@ -30,6 +31,7 @@ COMILLA \"
 ASIGNACION \=
 
 %%
+"end" return END;
 {ESPECIFICADORTIPOENTERO}     {yylval.myStruct.tipo = 1; return ESPECIFICADORTIPOENTERO;}
 {ESPECIFICADORTIPOFLOAT}	  {yylval.myStruct.tipo = 1; return ESPECIFICADORTIPOFLOAT;}
 {ESPECIFICADORTIPOCADENA}	  {yylval.myStruct.tipo = 2; return ESPECIFICADORTIPOCADENA;}

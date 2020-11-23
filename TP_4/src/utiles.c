@@ -4,7 +4,7 @@ void* saludar(){
     printf("Bienvenido al Analizador Sint%cctico...\nSTRING API = %i\n",160,STRING);
 }
 
-symrec *putsym(char const *sym_name, enum API sym_type, int newValue, char* newString,char* parametros){
+symrec *putsym(char* sym_name, enum API sym_type, int newValue, char* newString,char* parametros){
   symrec *ptr = (symrec *) malloc (sizeof (symrec));
   ptr->name = (char *) malloc (strlen (sym_name) + 1);
   strcpy (ptr->name,sym_name);
@@ -26,6 +26,7 @@ symrec *putsym(char const *sym_name, enum API sym_type, int newValue, char* newS
   }
   
   else if(sym_type == FUNCION){
+  ptr->next = (struct symrec *) ts;
   ptr->parametros = malloc(strlen(parametros) + 1);
   strcpy(ptr->parametros,parametros);
   ptr->cantidadParametros = newValue;
@@ -42,11 +43,18 @@ symrec *putsym(char const *sym_name, enum API sym_type, int newValue, char* newS
 
 }
 // seguir con iomplementacion TS en archivo.y   %%%%
-symrec *getsym(char const *sym_name){
+symrec *getsym(char* sym_name){
   symrec *ptr;
-  for (ptr = ts; ptr != (symrec *) 0;
-       ptr = (symrec *)ptr->next)
+  for (ptr = ts; ptr != (symrec *) 0; ptr = (symrec *)ptr->next)
+    //printf("Nombre TS es --> %s.\n",ptr->name);
     if (strcmp (ptr->name, sym_name) == 0)
       return ptr;
   return 0;
 };
+
+void* leerTS(){
+  symrec *ptr;
+  for (ptr = ts; ptr != (symrec *) 0; ptr = (symrec *)ptr->next)
+    printf("Nombre TS es --> %s.\n",ptr->name);
+};
+

@@ -19,5 +19,6 @@ typedef struct symrec
 
 extern symrec *ts;
 
-symrec *putsym(char const*, enum API, int, char*, char*);
-symrec *getsym(char const*);
+symrec *putsym(char*, enum API, int, char*, char*);
+symrec *getsym(char*);
+void* leerTS();
