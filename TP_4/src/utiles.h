@@ -10,7 +10,7 @@ typedef struct symrec
 {
   char *name;
   enum API types; //Va a ser un enum con los tipos de datos
-  float valor;
+  int valor;
   char* cadena;
   char* parametros;
   int cantidadParametros;
@@ -22,3 +22,6 @@ extern symrec *ts;
 symrec *putsym(char*, enum API, int, char*, char*);
 symrec *getsym(char*);
 void* leerTS();
+void* informeTS();
+void* convertirApiAChar(enum API tipo);
+void* _string_append(char* original, char* append);

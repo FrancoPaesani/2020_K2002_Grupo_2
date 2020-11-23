@@ -13,7 +13,6 @@ void yyerror(char *string);
 void* string_append(char* s1, int type);	// 0 uso parametrosUso. 1 uso parametrosDecla
 char** _string_split(char* text, char* separator, int(*condition)(char*, int));
 char **string_split(char *text, char *separator);
-void* _string_append(char* original, char* append);
 
 extern FILE* yyin;
 extern int linea;
@@ -122,8 +121,8 @@ struct yylaval_struct{
 %%
 
 
-programa: listaDeSentencias '\n' END {printf("Termino sin errores.\n");leerTS();}
-			| listaDeSentencias END {printf("Termino sin errores.\n");leerTS();}
+programa: listaDeSentencias '\n' END {printf("Termino sin errores sintacticos. Revisar el informa de consola por errrores semanticos\n");informeTS();}
+			| listaDeSentencias END {printf("Termino sin errores sintactico. Revisar el informe de consola por errores semanticos.\n");informeTS();}
 ;
 
 listaDeSentencias: sentencia otraCosa
@@ -228,11 +227,11 @@ declaracion:	especificadorTipo ';'
 				| especificadorTipo declarador ';' {}
 				| especificadorTipo declarador ASIGNACION expresion ';' {if(getsym($<myStruct>2.valor_string) == 0){
 																	if($<myStruct>1.tipo == $<myStruct>4.tipo )
-																	{printf("La variable no se encuentra declarada.\n");
+																	{//printf("La variable no se encuentra declarada.\n");
 																	putsym($<myStruct>2.valor_string,$<myStruct>1.tipo,$<myStruct>4.valor,$<myStruct>4.valor_string,NULL);
 																	}
-																	else{printf("HAY UN ERROR DE TIPO DE DATO.\n");}}
-																	else{printf("HAY UN ERROR DE DOBLE DECLARACION.\n");}
+																	else{printf("Error semantico de asignacion TIPO DE DATO en la linea %i.\n",linea);}}
+																	else{printf("Error semantico de doble declaracion de la variable %s en la linea %i.\n",$<myStruct>2.valor_string,linea);}
 																	}
 ;
 
@@ -362,10 +361,7 @@ void* string_append(char* s1, int type){
 	}
 }
 
-void* _string_append(char* original, char* append){							//global
-	realloc(original, strlen(original) + strlen(append) + 1);
-	strcat(&original,append);
-}
+
 
 char **string_split(char *text, char *separator) {
 	int _is_last_token(char* next, int _) {
