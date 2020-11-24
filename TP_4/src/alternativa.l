@@ -62,7 +62,6 @@ ASIGNACION \=
 {MASIGUAL} {return MASIGUAL;}
 {MENOR} {printf("UN MENOR\n");return MENOR;}
 {MAYOR} {return MAYOR;}
-{COMILLA} {return COMILLA;}
 ";" {return ';';}
 "\n" {linea++; return'\n';}
 "." {return '.';}
@@ -83,7 +82,7 @@ ASIGNACION \=
 0{DIGITO_OCTAL}*/[^a-zA-Z] {yylval.myStruct.valor = atoi(yytext);return REAL;}
 0[xX]{DIGITO_HEXADECIMAL}+/[^a-zA-Z] {return NUM;}
 {DIGITO_DECIMAL}*\.{DIGITO_DECIMAL}+([Ee](\+|\-)?{DIGITO_DECIMAL}*)?/[^a-zA-Z] {yylval.myStruct.valor = atof(yytext); yylval.myStruct.tipo = 1; return NUM;}
-[.]* {printf("Caracter no reconocido %s.\n",yytext);return NO_RECONOCIDO;}
+[^\t' '] {printf("Caracter no reconocido %s.\n",yytext);return NO_RECONOCIDO;}
 %%
 
 
