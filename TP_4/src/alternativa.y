@@ -147,7 +147,7 @@ funcion: 		especificadorTipo IDENTIFICADOR '(' listaParametros ')' '{' sentencia
 																							//printf("Error semantico. La declaracion de la funcion ya se realizo. Se puede hacer uso de la funcion.\n");
 																							}
 																							else{
-																								symrec* aux = putsym($<myStruct>2.valor_string,FUNCION,cantidadParametros,NULL,parametrosDecla);
+																								symrec* auxf = putsym($<myStruct>2.valor_string,FUNCION,cantidadParametros,NULL,parametrosDecla);
 																							}
 																							cantidadParametros = 0;
 																							int j =0;while(parametrosDecla[j]!=NULL){parametrosDecla[j] = NULL;j++;}}
