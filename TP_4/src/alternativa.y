@@ -142,12 +142,12 @@ sentencia: 			declaracion
 					| funcionUso '\n'
 					| funcion '\n'
 ;
-funcion: 		especificadorTipo IDENTIFICADOR '(' listaParametros ')' '{' sentencia  '}' ';' {symrec* auxFunc = getsym($<myStruct>2.valor_string);
+funcion: 		especificadorTipo IDENTIFICADOR '(' listaParametros ')' '{' sentencia  '}' ';' {symrec* aux = getsym($<myStruct>2.valor_string);
 																								if(aux){yyerror("Error semantico. La declaracion de la funcion ya se realizo. Se puede hacer uso de la funcion.\n");
 																							//printf("Error semantico. La declaracion de la funcion ya se realizo. Se puede hacer uso de la funcion.\n");
 																							}
 																							else{
-																								symrec* auxf = putsym($<myStruct>2.valor_string,FUNCION,cantidadParametros,NULL,parametrosDecla);
+																								symrec* aux = putsym($<myStruct>2.valor_string,FUNCION,cantidadParametros,NULL,parametrosDecla);
 																							}
 																							cantidadParametros = 0;
 																							int j =0;while(parametrosDecla[j]!=NULL){parametrosDecla[j] = NULL;j++;}}
